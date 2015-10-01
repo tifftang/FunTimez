@@ -1,4 +1,4 @@
-package Parse;
+package parse;
 
 import com.parse.Parse;
 

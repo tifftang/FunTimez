@@ -1,4 +1,6 @@
-package com.example.funtimez;
+package com.funtimez;
+
+import com.example.funtimez.R;
 
 import android.app.Activity;
 import android.os.Bundle;
