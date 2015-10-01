@@ -19,9 +19,9 @@ import android.text.TextUtils;
 
 import java.util.List;
 
-import com.example.funtimez.R;
-import com.example.funtimez.R.string;
-import com.example.funtimez.R.xml;
+import com.funtimez.R;
+import com.funtimez.R.string;
+import com.funtimez.R.xml;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

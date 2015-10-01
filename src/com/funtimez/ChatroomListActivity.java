@@ -1,9 +1,9 @@
 package com.funtimez;
 
-import com.example.funtimez.R;
-import com.example.funtimez.R.id;
-import com.example.funtimez.R.layout;
-import com.example.funtimez.R.menu;
+import com.funtimez.R;
+import com.funtimez.R.id;
+import com.funtimez.R.layout;
+import com.funtimez.R.menu;
 
 import android.app.Activity;
 import android.os.Bundle;

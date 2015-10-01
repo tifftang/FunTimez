@@ -28,10 +28,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.funtimez.R;
-import com.example.funtimez.R.id;
-import com.example.funtimez.R.layout;
-import com.example.funtimez.R.string;
+import com.funtimez.R;
+import com.funtimez.R.id;
+import com.funtimez.R.layout;
+import com.funtimez.R.string;
 
 /**
  * A login screen that offers login via email/password.

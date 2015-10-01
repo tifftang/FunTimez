@@ -1,13 +1,18 @@
 package com.funtimez;
 
-import com.example.funtimez.R;
+import com.funtimez.R;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends Activity {
+/*
+ *  Base class that stores all preferences. Other activities should extend this activity.
+ * 
+ */
+
+public class FunTimezActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
