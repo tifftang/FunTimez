@@ -6,6 +6,7 @@ import com.funtimez.R.layout;
 import com.funtimez.R.menu;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class SignUpActivity extends Activity {
 	private Button bRegister;
@@ -28,6 +30,7 @@ public class SignUpActivity extends Activity {
 		setContentView(R.layout.activity_sign_up);
 		Parse.initialize(this, "wOkzFyuJ9aur1K2ZbvP8YGjtDAegt93Di4a6T4nV", "fz2O6WxTp3dE9yIZmJbaDsgswPXNIfmHdhlchxTy");
 		bRegister = (Button) findViewById(R.id.register);
+		
 		bRegister.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -43,8 +46,9 @@ public class SignUpActivity extends Activity {
 				// Confirm Password
 				//String confirmPassword = ((EditText) findViewById(R.id.ConfirmPassword_Register)).getText().toString();
 				// Update
-				if (checkValidInput())
-						registerUserOnParse();
+				 registerUserOnParse();
+
+
 			}
 		});
 
@@ -71,14 +75,17 @@ public class SignUpActivity extends Activity {
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setEmail(email);
-		  
+		Toast.makeText(getApplicationContext(), "Su1ess", Toast.LENGTH_SHORT).show();
 		user.signUpInBackground(new SignUpCallback() {
 		  public void done(ParseException e) {
+			  Toast.makeText(getApplicationContext(), "Su2", Toast.LENGTH_SHORT).show();
 		    if (e == null) {
 		      // Hooray! Let them use the app now.
+		    	Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
 		    } else {
 		      // Sign up didn't succeed. Look at the ParseException
 		      // to figure out what went wrong
+		    	Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
 		    }
 		  }
 		});		
