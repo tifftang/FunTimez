@@ -54,8 +54,6 @@ public class LoginActivity extends Activity  {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		// Set up connection to Parse
-		//Parse.initialize(this, "wOkzFyuJ9aur1K2ZbvP8YGjtDAegt93Di4a6T4nV", "fz2O6WxTp3dE9yIZmJbaDsgswPXNIfmHdhlchxTy");
 	    Button btn = (Button)findViewById(R.id.register);
 	    btn.setOnClickListener(new View.OnClickListener() {
 	        @Override

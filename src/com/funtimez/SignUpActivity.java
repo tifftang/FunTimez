@@ -28,7 +28,6 @@ public class SignUpActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_up);
-		Parse.initialize(this, "wOkzFyuJ9aur1K2ZbvP8YGjtDAegt93Di4a6T4nV", "fz2O6WxTp3dE9yIZmJbaDsgswPXNIfmHdhlchxTy");
 		bRegister = (Button) findViewById(R.id.register);
 		
 		bRegister.setOnClickListener(new OnClickListener() {
