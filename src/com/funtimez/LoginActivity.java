@@ -54,8 +54,8 @@ public class LoginActivity extends Activity  {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-	    Button btn = (Button)findViewById(R.id.register);
-	    btn.setOnClickListener(new View.OnClickListener() {
+	    Button btnRegister = (Button)findViewById(R.id.register);
+	    btnRegister.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
 	       	    intent = new Intent(LoginActivity.this, com.funtimez.SignUpActivity.class);
