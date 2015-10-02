@@ -47,11 +47,8 @@ public class SignUpActivity extends Activity {
 				//String confirmPassword = ((EditText) findViewById(R.id.ConfirmPassword_Register)).getText().toString();
 				// Update
 				 registerUserOnParse();
-
-
 			}
 		});
-
 	}
 	
 	public boolean checkValidInput(){
