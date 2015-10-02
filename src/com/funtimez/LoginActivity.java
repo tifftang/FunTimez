@@ -75,7 +75,7 @@ public class LoginActivity extends Activity  {
 	}
 
 	public void checkLoginInfo(){
-		String username = ((EditText)findViewById(R.id.email)).getText().toString();
+		String username = ((EditText)findViewById(R.id.username)).getText().toString();
 		String pw = ((EditText)findViewById(R.id.password)).getText().toString();
 
 		ParseUser.logInInBackground(username, pw, new LogInCallback(){
@@ -91,10 +91,10 @@ public class LoginActivity extends Activity  {
 					if(e.getCode() == 101){
 						//Make a dialog pop up to notify the user that the info they input is incorrect.
 						AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-						builder.setMessage("The login information you provided is incorrect. Please try again.")
-							   .setTitle(R.string.login_error_dialogue_box)
+						builder.setMessage(R.string.error_incorrect_login_info)
+							   .setTitle(R.string.dialog_box_login_error)
 						       .setCancelable(false)
-						       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
 						           public void onClick(DialogInterface dialog, int id) {
 						        	   dialog.dismiss();
 						           }
