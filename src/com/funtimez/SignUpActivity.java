@@ -4,9 +4,7 @@ import com.funtimez.R;
 import com.funtimez.R.id;
 import com.funtimez.R.layout;
 import com.funtimez.R.menu;
-import com.parse.Parse;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
