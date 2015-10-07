@@ -69,13 +69,11 @@ public class SignUpActivity extends Activity {
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setEmail(email);
-		Toast.makeText(getApplicationContext(), "Su1ess", Toast.LENGTH_SHORT).show();
 		user.signUpInBackground(new SignUpCallback() {
 		  public void done(ParseException e) {
-			  Toast.makeText(getApplicationContext(), "Su2", Toast.LENGTH_SHORT).show();
 		    if (e == null) {
 		      // Hooray! Let them use the app now.
-		    	Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(getApplicationContext(), "Registeration successful", Toast.LENGTH_SHORT).show();
 		    } else {
 		      // Sign up didn't succeed. Look at the ParseException
 		      // to figure out what went wrong
