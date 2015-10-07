@@ -9,33 +9,37 @@
     tools:context="com.funtimez.ChatroomActivity" >
 
     <TextView
-        android:id="@+id/text2"
+        android:id="@+id/display_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="" >
     </TextView>
 
     <Button
-        android:id="@+id/myButton"
+        android:id="@+id/send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/text2"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="122dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="130dp"
         android:onClick="onClick"
         android:text="Send" />
 
-    <EditText
-        android:id="@+id/EditText01"
+   <EditText
+        android:id="@+id/send_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/myButton"
-        android:layout_alignLeft="@+id/text2"
-        android:layout_marginBottom="60dp"
+        android:layout_centerVertical="true"
         android:ems="10"
-        android:hint="Type here" >
+        android:hint="Type here" />
 
-        <requestFocus />
-    </EditText>
+   <Button
+       android:id="@+id/add"
+       style="?android:attr/buttonStyleSmall"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_above="@+id/send_text"
+       android:layout_alignLeft="@+id/send_text"
+       android:text="+" />
 
 </RelativeLayout>
