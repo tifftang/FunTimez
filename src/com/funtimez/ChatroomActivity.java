@@ -15,17 +15,20 @@ import java.util.Enumeration;
 
 import com.funtimez.R;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import core.User;
@@ -54,6 +57,8 @@ public class ChatroomActivity extends Activity {
 		app = ((FunTimezApp)getApplicationContext());
 		username = app.getUser().getUsername();
 		updateConversationHandler = new Handler();
+		final EditText send_text = (EditText) findViewById(R.id.send_text);
+		text.setMovementMethod(new ScrollingMovementMethod());
 		if(isServer){
 			this.serverThread = new Thread(new ServerThread());
 			this.serverThread.start();
@@ -64,7 +69,7 @@ public class ChatroomActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				try {
-					EditText send_text = (EditText) findViewById(R.id.send_text);
+					
 					if(socket.isConnected()){
 						PrintWriter out = new PrintWriter(new BufferedWriter(
 								new OutputStreamWriter(socket.getOutputStream())),
@@ -101,6 +106,21 @@ public class ChatroomActivity extends Activity {
 				    public void onClick(DialogInterface dialog, int which) {
 				        m_Text = input.getText().toString();
 				        // TODO: Create button
+				         final Button myButton = new Button(ChatroomActivity.this);
+		                 myButton.setText(m_Text);
+		                 LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
+		                 LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		                 Toast.makeText(getApplicationContext(), m_Text, Toast.LENGTH_SHORT).show();	
+		                 ll.addView(myButton, lp);
+		                 myButton.setOnClickListener(new OnClickListener() {
+		                	    public void onClick(View v)
+		                	    {
+		                	        CharSequence shortcut = myButton.getText();
+		                	        send_text.append(shortcut);
+		                	        send_text.setSelection(send_text.getText().length());
+		                	        
+		                	    } 
+		                	});
 				    }
 				});
 				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import core.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +76,14 @@ public class LoginActivity extends Activity  {
 	}
 
 	public void checkLoginInfo(){
-		String username = ((EditText)findViewById(R.id.username)).getText().toString();
+		final String username = ((EditText)findViewById(R.id.username)).getText().toString();
 		String pw = ((EditText)findViewById(R.id.password)).getText().toString();
 
 		ParseUser.logInInBackground(username, pw, new LogInCallback(){
 			public void done(ParseUser user, ParseException e){
 				if (user != null){
+					FunTimezApp app = ((FunTimezApp)getApplicationContext());
+					app.setUser(new User(username));
 					//if correct, proceed to ChatroomListActivity
 					intent = new Intent(LoginActivity.this, com.funtimez.ChatroomListActivity.class);
 					startActivity(intent);

@@ -12,6 +12,8 @@
         android:id="@+id/display_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLines = "10"
+		android:scrollbars = "vertical"
         android:text="" >
     </TextView>
 
@@ -33,13 +35,8 @@
         android:ems="10"
         android:hint="Type here" />
 
-   <Button
-       android:id="@+id/add"
-       style="?android:attr/buttonStyleSmall"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_above="@+id/send_text"
-       android:layout_alignLeft="@+id/send_text"
-       android:text="+" />
+  <include
+      android:id="@+id/button_layout"
+      layout="@layout/button_layout" />
 
 </RelativeLayout>
