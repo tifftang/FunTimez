@@ -1,26 +1,30 @@
 package com.funtimez;
-import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import com.funtimez.R;
-
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ActionBar.LayoutParams;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -31,39 +35,71 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import core.User;
+import core.Server;
 
 public class ChatroomActivity extends Activity {
-
-	private ServerSocket serverSocket;
-	Handler updateConversationHandler;
-	Thread serverThread = null;
-	private TextView text;
+    /** Messenger for communicating with the service. */
+    Server mService = null;
+    //Server mService;
+    /** Flag indicating whether we have called bind on the service. */
+    boolean mBound;
 	public static final int SERVERPORT = 6000;
-	private Socket socket;
 	private static final String LOG_TAG = null;
+	private Socket socket;
 	private Button bSend, bAdd;
 	private boolean isServer = true;
 	private FunTimezApp app;
 	private String username;
 	private String m_Text = "";
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
 
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_chatroom);
+    /**
+     * Class for interacting with the main interface of the service.
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the object we can use to
+            // interact with the service.  We are communicating with the
+            // service using a Messenger, so here we get a client-side
+            // representation of that from the raw IBinder object.
+            mService = ((Server.MyLocalBinder) service).getService();
+            mService.setHandler(mHandler);
+            mBound = true;
+            new Thread(new ClientThread()).start();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            mService = null;
+            mBound = false;
+        }
+    };
+	private TextView text;
+	private Handler updateConversationHandler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_activity_messenger);
+        startService(new Intent(this, Server.class));
+        // Bind to the service
+        bindService(new Intent(this, Server.class), mConnection,Context.BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
 		text = (TextView) findViewById(R.id.display_text);
 		app = ((FunTimezApp)getApplicationContext());
-		username = app.getUser().getUsername();
-		updateConversationHandler = new Handler();
+		//username = app.getUser().getUsername();
 		final EditText send_text = (EditText) findViewById(R.id.send_text);
 		text.setMovementMethod(new ScrollingMovementMethod());
-		if(isServer){
-			this.serverThread = new Thread(new ServerThread());
-			this.serverThread.start();
-		}
-		new Thread(new ClientThread()).start();
+		updateConversationHandler = new Handler();
+
+		
 		bSend = (Button) findViewById(R.id.send);
 		bSend.setOnClickListener(new OnClickListener() {
 			@Override
@@ -71,12 +107,13 @@ public class ChatroomActivity extends Activity {
 				try {
 					
 					if(socket.isConnected()){
+						Toast.makeText(getApplicationContext(), "Sending", Toast.LENGTH_SHORT).show();
 						PrintWriter out = new PrintWriter(new BufferedWriter(
 								new OutputStreamWriter(socket.getOutputStream())),
 								true);
 						out.println(send_text.getText().toString());
+						Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_SHORT).show();
 					}else{
-						
 						Toast.makeText(getApplicationContext(), "Not Connected", Toast.LENGTH_SHORT).show();	
 					}
 
@@ -132,80 +169,27 @@ public class ChatroomActivity extends Activity {
 				builder.show();
 			}
 		});
+        
+    }
+	class ClientThread implements Runnable {
 
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		try {
-			serverSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	class ServerThread implements Runnable {
-
+		@Override
 		public void run() {
-			Socket socket = null;
-			Log.i("Thread", "server thread running");
+			Log.i("Thread", "client thread running");
 			try {
-				serverSocket = new ServerSocket(SERVERPORT);
-			} catch (IOException e) {
-				e.printStackTrace();
+				Log.i("Thread", getLocalIpAddress());
+				socket = new Socket(getLocalIpAddress(), SERVERPORT);
+			
+			} catch (UnknownHostException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-			while (!Thread.currentThread().isInterrupted()) {
 
-				try {
-
-					socket = serverSocket.accept();
-
-					CommunicationThread commThread = new CommunicationThread(socket);
-					new Thread(commThread).start();
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	class CommunicationThread implements Runnable {
-
-		private Socket clientSocket;
-		private BufferedReader input;
-		public CommunicationThread(Socket clientSocket) {
-
-			this.clientSocket = clientSocket;
-
-			try {
-
-				this.input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		public void run() {
-
-			while (!Thread.currentThread().isInterrupted()) {
-
-				try {
-
-					String read = input.readLine();
-
-					updateConversationHandler.post(new updateUIThread(read));
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 	}
-
+	
 	class updateUIThread implements Runnable {
 		private String msg;
 
@@ -217,24 +201,6 @@ public class ChatroomActivity extends Activity {
 		public void run() {
 			text.setText(text.getText().toString()+ username + "says: "+ msg + "\n");
 		}
-	}
-
-	class ClientThread implements Runnable {
-
-		@Override
-		public void run() {
-			Log.i("Thread", "client thread running");
-			try {
-				socket = new Socket(getLocalIpAddress(), SERVERPORT);
-			
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-		}
-
 	}
 	/* 
 	 * Lifted from stack overflow, grabs the ip address of this device
@@ -255,4 +221,40 @@ public class ChatroomActivity extends Activity {
 	    }
 	    return null;
 	}
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    public static final int MSG_SEND = 1;
+    /**
+     * Handler of incoming messages from clients.
+     */
+    public class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_SEND:
+                	Bundle bundle = msg.getData();
+                	updateConversationHandler.post(new updateUIThread(bundle.getString("msg")));
+                	break;
+                default:
+                	super.handleMessage(msg);
+            }
+        }
+    }
+
+    /**
+     * Target we publish for clients to send messages to IncomingHandler.
+     */
+    final IncomingHandler mHandler = new IncomingHandler();
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+
+    
 }
