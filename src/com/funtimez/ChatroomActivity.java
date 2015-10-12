@@ -148,7 +148,6 @@ public class ChatroomActivity extends Activity {
 				    public void onClick(DialogInterface dialog, int which) {
 				        m_Text = input.getText().toString();
 				        int pixels = m_Text.length() * 80;
-				        // TODO: Create button
 				         final Button myButton = new Button(ChatroomActivity.this);
 		                 myButton.setText(m_Text);
 		                 final LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
