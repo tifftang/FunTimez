@@ -2,6 +2,7 @@ package com.funtimez;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -37,6 +38,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import core.FileHelper;
 import core.Server;
 
 public class ChatroomActivity extends Activity {
@@ -49,10 +51,10 @@ public class ChatroomActivity extends Activity {
 	private static final String LOG_TAG = null;
 	private Socket socket;
 	private Button bSend, bAdd;
-	private boolean isServer = true;
 	private FunTimezApp app;
 	private String username;
 	private String m_Text = "";
+	private FileHelper fileHelper = new FileHelper();
 
     /**
      * Class for interacting with the main interface of the service.
@@ -110,12 +112,10 @@ public class ChatroomActivity extends Activity {
 				try {
 					
 					if(socket.isConnected()){
-						Toast.makeText(getApplicationContext(), "Sending", Toast.LENGTH_SHORT).show();
 						PrintWriter out = new PrintWriter(new BufferedWriter(
 								new OutputStreamWriter(socket.getOutputStream())),
 								true);
 						out.println(send_text.getText().toString());
-						Toast.makeText(getApplicationContext(), "Sent", Toast.LENGTH_SHORT).show();
 					}else{
 						Toast.makeText(getApplicationContext(), "Not Connected", Toast.LENGTH_SHORT).show();	
 					}
@@ -182,17 +182,27 @@ public class ChatroomActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String textToStore = text.getText().toString();
+				String[] lines = textToStore.split( "\n" );
 			    try {
-					File file = getFileStreamPath("test.txt");
+			    	File dir = fileHelper.getChatStorageDir("test");
+			    	FileOutputStream writer = new FileOutputStream(new File(dir + "/test.html"));
+			    	writer.write("<html>".getBytes());
+			    	writer.write("<head>".getBytes());
+			    	writer.write("<title>Chat History</title>".getBytes());
+			    	writer.write("<body>".getBytes());
+			    	writer.write("<table width=\"100%%\" cellpadding=\"1\" cellspacing=\"0\">".getBytes());
 
-					if (!file.exists()) {
-					   file.createNewFile();
-					}
-			    	FileOutputStream writer = openFileOutput(file.getName(), Context.MODE_PRIVATE);
-					writer.write(textToStore.getBytes());
+			    	for(String l: lines){
+			    		String msg = "<tr><td class=\"msg\" width=\"100%\"><FONT face=\"Arial\" size=\"2\" color=\"#000000\">" + l + "</FONT></td></tr>";
+			    		writer.write(msg.getBytes());
+			    	}
+			    	writer.write("</body>".getBytes());
+			    	writer.write("</body>".getBytes());
+			    	writer.write("</html>".getBytes());
 					writer.flush();
 					writer.close();
 					Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+			    	
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

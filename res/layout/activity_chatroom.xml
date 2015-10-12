@@ -16,6 +16,7 @@
 		android:scrollbars = "vertical"
         android:text="" >
     </TextView>
+    
 
     <Button
         android:id="@+id/send"
