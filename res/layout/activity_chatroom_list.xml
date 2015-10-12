@@ -8,9 +8,68 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.funtimez.ChatroomListActivity" >
 
-    <TextView
+    <Button
+        android:id="@+id/addChatroom"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="+" />
+    
+    <!--
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true" >
+
+    </ListView>	!-->
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addChatroom" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chatroom 1" />
+            
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chatroom 1 id" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <Button
+		        android:id="@+id/button3"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Chatroom 2" />
+            
+            <Button
+		        android:id="@+id/button4"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Chatroom 2 id" />
+        </TableRow>
+
+    
+    </TableLayout>
 
 </RelativeLayout>
