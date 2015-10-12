@@ -1,11 +1,13 @@
 package com.funtimez;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -57,6 +59,7 @@ public class ChatroomActivity extends Activity {
 	private String username;
 	private String m_Text = "";
 	private FileHelper fileHelper = new FileHelper();
+	private String ipaddress;
 
     /**
      * Class for interacting with the main interface of the service.
@@ -71,6 +74,7 @@ public class ChatroomActivity extends Activity {
             mService = ((Server.MyLocalBinder) service).getService();
             mService.setHandler(mHandler);
             mBound = true;
+
             new Thread(new ClientThread()).start();
         }
 
@@ -276,9 +280,6 @@ public class ChatroomActivity extends Activity {
 				});
 				builder.show();
 
-
-				
-
 			}
 		});
         
@@ -291,6 +292,11 @@ public class ChatroomActivity extends Activity {
 			try {
 				Log.i("Thread", getLocalIpAddress());
 				socket = new Socket(getLocalIpAddress(), SERVERPORT);
+				while(true){
+					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					String read = input.readLine();
+					updateConversationHandler.post(new updateUIThread(read));
+				}
 			
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
@@ -311,7 +317,7 @@ public class ChatroomActivity extends Activity {
 
 		@Override
 		public void run() {
-			text.setText(text.getText().toString()+ username + "says: "+ msg + "\n");
+			text.setText(text.getText().toString()+ username + " says: "+ msg + "\n");
 		}
 	}
 	/* 
@@ -353,7 +359,7 @@ public class ChatroomActivity extends Activity {
             switch (msg.what) {
                 case MSG_SEND:
                 	Bundle bundle = msg.getData();
-                	updateConversationHandler.post(new updateUIThread(bundle.getString("msg")));
+                	//updateConversationHandler.post(new updateUIThread(bundle.getString("msg")));
                 	break;
                 default:
                 	super.handleMessage(msg);
