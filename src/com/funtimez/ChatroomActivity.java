@@ -33,6 +33,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -149,7 +150,7 @@ public class ChatroomActivity extends Activity {
 				        // TODO: Create button
 				         final Button myButton = new Button(ChatroomActivity.this);
 		                 myButton.setText(m_Text);
-		                 LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
+		                 final LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
 		                 LayoutParams lp = new LayoutParams(pixels, LayoutParams.MATCH_PARENT);
 		                 Toast.makeText(getApplicationContext(), m_Text, Toast.LENGTH_SHORT).show();	
 		                 ll.addView(myButton, lp);
@@ -164,9 +165,49 @@ public class ChatroomActivity extends Activity {
 		                	        
 		                	    } 
 		                	});
-		                
+		                 myButton.setOnLongClickListener(new View.OnLongClickListener() {
+
+		                     @Override
+		                     public boolean onLongClick(View v) {
+		         				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomActivity.this);
+		        				builder.setTitle("Edit new shortcut button");
+		        				// Set up the input
+		        				final EditText input = new EditText(ChatroomActivity.this);
+		        				// Set input type
+		        				input.setInputType(InputType.TYPE_CLASS_TEXT);
+		        				builder.setView(input);
+		        				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+		        				    @Override
+		        				    public void onClick(DialogInterface dialog, int which) {
+		        				        m_Text = input.getText().toString();
+		        				        int pixels = m_Text.length() * 80;
+		        				        ViewGroup.LayoutParams lp =  myButton.getLayoutParams();
+		        				        lp.width = pixels;
+		        				        myButton.setLayoutParams(lp);
+		        		                myButton.setText(m_Text);
+		        				    }
+		        				});
+		        				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		        				    @Override
+		        				    public void onClick(DialogInterface dialog, int which) {
+		        				        dialog.cancel();
+		        				    }
+		        				});
+		        				builder.setNeutralButton("Delete",  new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										ll.removeView(myButton);
+									}
+		        					
+		        				});
+		        				builder.show();
+		                         return true;
+		                     }
+		                 });
 		                 
 				    }
+				    
 				});
 				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 				    @Override
