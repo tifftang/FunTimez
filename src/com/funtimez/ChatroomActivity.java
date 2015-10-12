@@ -1,6 +1,8 @@
 package com.funtimez;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -77,6 +79,7 @@ public class ChatroomActivity extends Activity {
     };
 	private TextView text;
 	private Handler updateConversationHandler;
+	private Button bSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,6 +175,33 @@ public class ChatroomActivity extends Activity {
 				    }
 				});
 				builder.show();
+			}
+		});
+		bSave = (Button) findViewById(R.id.save);
+		bSave.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String textToStore = text.getText().toString();
+			    try {
+					File file = getFileStreamPath("test.txt");
+
+					if (!file.exists()) {
+					   file.createNewFile();
+					}
+			    	FileOutputStream writer = openFileOutput(file.getName(), Context.MODE_PRIVATE);
+					writer.write(textToStore.getBytes());
+					writer.flush();
+					writer.close();
+					Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+				
+
 			}
 		});
         
