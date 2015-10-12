@@ -142,13 +142,16 @@ public class ChatroomActivity extends Activity {
 				    @Override
 				    public void onClick(DialogInterface dialog, int which) {
 				        m_Text = input.getText().toString();
+				        int pixels = m_Text.length() * 80;
 				        // TODO: Create button
 				         final Button myButton = new Button(ChatroomActivity.this);
 		                 myButton.setText(m_Text);
 		                 LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
-		                 LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		                 LayoutParams lp = new LayoutParams(pixels, LayoutParams.MATCH_PARENT);
 		                 Toast.makeText(getApplicationContext(), m_Text, Toast.LENGTH_SHORT).show();	
 		                 ll.addView(myButton, lp);
+		                /* LayoutParams params = new LayoutParams(10, LayoutParams.MATCH_PARENT);
+		                 myButton.setLayoutParams(params);*/
 		                 myButton.setOnClickListener(new OnClickListener() {
 		                	    public void onClick(View v)
 		                	    {
@@ -158,6 +161,8 @@ public class ChatroomActivity extends Activity {
 		                	        
 		                	    } 
 		                	});
+		                
+		                 
 				    }
 				});
 				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

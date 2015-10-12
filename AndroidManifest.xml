@@ -25,11 +25,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> 
         </activity>
         <activity
             android:name=".FunTimezActivity"
@@ -47,7 +43,11 @@
             android:name=".ChatroomActivity"
             android:label="@string/title_activity_chatroom" >
 
- 
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter> 
         </activity>
         <activity
             android:name=".ChatroomListActivity"
@@ -71,12 +71,6 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-
-        <activity
-            android:name=".ActivityMessenger"
-            android:label="@string/title_activity_activity_messenger" >
-   
-        </activity>
          <service android:name="core.Server"></service>
     </application>
 
