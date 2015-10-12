@@ -16,14 +16,14 @@ public class Chatroom {
 	private static final int NAME_LENGTH_MIN_LIMIT = 5;
 	private static final int NAME_LENGTH_MAX_LIMIT = 20;
 	
-	public void Chatroom(){
+	public Chatroom(){
 		myID = "";
 		myName = "";
 		myUserList = new ArrayList<String>();
 		myHostName = "";
 	}
 	
-	public void Chatroom(String id, String name, ArrayList<String> users, String hostName){
+	public Chatroom(String id, String name, ArrayList<String> users, String hostName){
 		myID = id;
 		myName = name;
 		myUserList = users;
