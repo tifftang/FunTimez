@@ -81,7 +81,7 @@ public class ChatroomActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_messenger);
+        setContentView(R.layout.activity_chatroom);
         startService(new Intent(this, Server.class));
         // Bind to the service
         bindService(new Intent(this, Server.class), mConnection,Context.BIND_AUTO_CREATE);
