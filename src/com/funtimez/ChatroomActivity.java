@@ -296,12 +296,11 @@ public class ChatroomActivity extends Activity {
 		@Override
 		public void run() {
 			Log.i("Thread", "client thread running");
-			Log.i("Threfsdfad", getChatroomHostIP("World"));
+			Log.i("Thread", getChatroomHostIP("World"));
 			try {
-				Log.i("Threfsdfad", getChatroomHostIP("World"));
 				socket = new Socket(getChatroomHostIP("World"), SERVERPORT);
 				if (socket.isConnected()){
-					Log.i("Threfsdfad", "we are connnn");
+					Log.i("Thread", "we are connnn");
 				}
 				
 				while(true){

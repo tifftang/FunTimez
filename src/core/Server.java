@@ -55,15 +55,16 @@ public class Server extends Service {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			while (!Thread.currentThread().isInterrupted()) {
+			while (true) {
 				//Log.i("Thread", "got message");
 				try {
 					
 					socket = serverSocket.accept();
 					clients.add(socket);
+					Log.i("server", socket.toString());
 					CommunicationThread commThread = new CommunicationThread(socket);
 					new Thread(commThread).start();
-					new Thread(new MessageThread()).start();
+					
 					
 
 				} catch (IOException e) {
@@ -90,11 +91,11 @@ public class Server extends Service {
 			}
 		}
 		public void run() {
-
+			Log.i("Thread", "comm thread running");
 			while (!Thread.currentThread().isInterrupted()) {
 				//Log.i("Thread", "got message");
 				try {
-					String read = input.readLine();
+					String read = this.input.readLine();
 					messages.put(read);
 
 
@@ -111,7 +112,7 @@ public class Server extends Service {
 	class MessageThread implements Runnable {
 
 		public void run() {
-
+			Log.i("Thread", "msg thread running");
 			while (!Thread.currentThread().isInterrupted()) {
 				//Log.i("Thread", "got message");
 				try {
@@ -137,7 +138,7 @@ public class Server extends Service {
     public void onCreate() {
 		this.serverThread = new Thread(new ServerThread());
 		this.serverThread.start();
-		
+		new Thread(new MessageThread()).start();
     }
 
 	@Override
