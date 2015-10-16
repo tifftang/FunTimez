@@ -9,6 +9,7 @@ import com.funtimez.R.menu;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -71,9 +72,17 @@ public class ChatroomListActivity extends Activity {
 		FunTimezApp app = ((FunTimezApp)getApplicationContext());
 		User user = app.getUser();
 		ArrayList<Chatroom> chats = user.getChatrooms();
+		
 		Log.i("FDSFSF", String.valueOf(chats.size()));
 		Button bSend = (Button) findViewById(R.id.button1);
 		bSend.setText(chats.get(0).getName());
+	    bSend.setOnClickListener(new View.OnClickListener() {
+	        @Override
+	        public void onClick(View v) {
+	       	    Intent intent = new Intent(ChatroomListActivity.this, ChatroomActivity.class);
+	    	    startActivity(intent);
+	        }
+	    });
 
 
 	}
