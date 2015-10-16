@@ -111,7 +111,6 @@ public class LoginActivity extends Activity  {
 					updateUser(username);
 
 					FunTimezApp app = ((FunTimezApp)getApplicationContext());
-					app.setUser(new User(username));
 					String ip = getLocalIpAddress();
 					user.put("IP", ip);
 					app.setIP(ip);

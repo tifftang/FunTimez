@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+import core.User;
 
 //===ArrayAdapter works, but cannot display the columns===============
 /*public class ChatroomListActivity extends ListActivity {
@@ -36,26 +38,29 @@ import android.widget.Toast;
 //=========================================================
 	
 //===To revert back to using SimpleCursorAdapter=================
-public class ChatroomListActivity extends ListActivity {
-
+public class ChatroomListActivity extends Activity {
+	
 	SimpleCursorAdapter myAdapter;
 
+	public static final String TAG = "ChatroomListActivity";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chatroom_list);
 		
+		User u = ((FunTimezApp) getApplicationContext()).getUser();
+
 //		SQLiteCursor cursor = createTestCursor();
 		
-		String[] from = createChatroomList();
+/*		String[] from = createChatroomList();
 		int[] to = {android.R.id.text1};
 
 		//getApplicationContext()
 		//myAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);//, 0);
 		myAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);
 		//getListView().setAdapter(myAdapter);
-		setListAdapter(myAdapter);
+		setListAdapter(myAdapter);*/
 	}
 //============================================================
 	
@@ -65,7 +70,7 @@ public class ChatroomListActivity extends ListActivity {
 	SQLiteCursor cursor = new SQLiteCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query);
 	return ;
 }*/
-	
+	/*
 private String[] createChatroomList()
 {
 	//chatroomList = {chatroom name, chatroom id, list of users using chatroom}
@@ -78,7 +83,7 @@ private String[] createChatroomList()
 		Toast.makeText(getApplicationContext(), id + "clicked", Toast.LENGTH_SHORT).show();
 
 	}
-	
+	*/
 /*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

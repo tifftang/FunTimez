@@ -9,17 +9,16 @@ public class User {
 		
 	public User(String username){
 		myUsername = username;
+		myChatrooms = new ArrayList<Chatroom>();
 	}
 	
 	public User(String username, ArrayList<Chatroom> chatrooms){
-		
 		myUsername = username;
 		myChatrooms = chatrooms;
 	}
 		
-	public void setChatroomList(List<Chatroom> chList){
-		myChatrooms.clear();
-		myChatrooms.addAll(chList);
+	public void setChatroomList(ArrayList<Chatroom> chList){
+		myChatrooms = chList;
 	}
 
 	public boolean addChatroom(Chatroom room){

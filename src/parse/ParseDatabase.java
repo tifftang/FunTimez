@@ -29,7 +29,7 @@ public class ParseDatabase {
 		try {
 			List<ParseUser> users = q.find();
 			if(users != null){
-				chatroomIDs = new ArrayList<Object>(Arrays.asList(users.get(0).get("chatrooms")));
+				chatroomIDs = (ArrayList<Object>) users.get(0).get("chatrooms");
 			}else
 				Log.e(TAG, "No such user in Parse.");
 		} catch (ParseException e) {
@@ -40,9 +40,6 @@ public class ParseDatabase {
 		for(int index = 0; index < chatroomIDs.size(); index++){
 			String id = (chatroomIDs.get(index)).toString();
 			String chatroomName = "";
-//System.out.println(chatroomIDs.get(index).getClass());
-//Log.i(TAG, chatroomIDs.get(index).getClass().toString());
-String naruto = chatroomIDs.get(index).getClass().toString();
 			ArrayList<Object> userList = new ArrayList<Object>();
 			String host = "";
 			
@@ -53,7 +50,7 @@ String naruto = chatroomIDs.get(index).getClass().toString();
 				if(chatrooms != null){
 					chatroomName = chatrooms.get(0).getString("name");
 					host = chatrooms.get(0).getString("hostName");
-					userList = new ArrayList<Object>(Arrays.asList(chatrooms.get(0).get("userList")));
+					userList = (ArrayList<Object>) chatrooms.get(0).get("userList");
 				}
 				else
 					Log.e(TAG, "No chatroom with that ID.");
@@ -74,7 +71,7 @@ String naruto = chatroomIDs.get(index).getClass().toString();
 			Chatroom cr = new Chatroom(id, chatroomName, userListString, host);
 			userChatrooms.add(cr);
 		}
-		
+
 		u.setChatroomList(userChatrooms);
 	}
 	
