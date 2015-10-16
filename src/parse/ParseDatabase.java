@@ -78,13 +78,15 @@ public class ParseDatabase {
 		
 	}
 	
-public boolean isHost(String chatroomID){
+public boolean isHost(String chatroomID, User u){
 		boolean isChatroomHost = false;
 		ParseQuery<ParseObject> q = ParseQuery.getQuery("Chatroom");
 		q.whereEqualTo("objectId", chatroomID);
 		try {
 			List<ParseObject> chatrooms = q.find();
-			
+			String chatroomHost = chatrooms.get(0).getString("hostName");
+			if(u.getUsername().equals(chatroomHost))
+				isChatroomHost = true;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
