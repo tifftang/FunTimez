@@ -7,8 +7,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-
+import java.util.Vector;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.funtimez.ChatroomActivity;
 
@@ -28,6 +28,8 @@ public class Server extends Service {
 	private final IBinder myBinder = new MyLocalBinder();
 	private Handler mHandler;
 	Messenger mMessenger;
+	private Vector<Socket> clients = new Vector<Socket>();
+	private LinkedBlockingQueue<String> messages = new LinkedBlockingQueue<String>();
 
 	public class MyLocalBinder extends Binder {
         public Server getService() {
@@ -56,38 +58,86 @@ public class Server extends Service {
 			while (!Thread.currentThread().isInterrupted()) {
 				//Log.i("Thread", "got message");
 				try {
-					socket = serverSocket.accept();
-					while(true){
 					
-					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-					OutputStream os = socket.getOutputStream();
-					PrintWriter pw = new PrintWriter(os, true);
+					socket = serverSocket.accept();
+					clients.add(socket);
+					CommunicationThread commThread = new CommunicationThread(socket);
+					new Thread(commThread).start();
+					new Thread(new MessageThread()).start();
+					
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}  
+			}
+		}
+	}
+	class CommunicationThread implements Runnable {
+		private Socket clientSocket;
+
+		private BufferedReader input;
+
+		public CommunicationThread(Socket clientSocket) {
+
+			this.clientSocket = clientSocket;
+
+			try {
+
+				this.input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		public void run() {
+
+			while (!Thread.currentThread().isInterrupted()) {
+				//Log.i("Thread", "got message");
+				try {
 					String read = input.readLine();
-					Log.i("Thread", read);
-					Message msg = Message.obtain(null, ChatroomActivity.MSG_SEND, 0, 0); 
-					Bundle bundle = new Bundle();
-					bundle.putString("msg", read);
-					pw.println(read);
-					pw.flush();
-					msg.setData(bundle);
-						mMessenger.send(msg);
+					messages.put(read);
+
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}  
+			}
+		}
+	}
+	
+	class MessageThread implements Runnable {
+
+		public void run() {
+
+			while (!Thread.currentThread().isInterrupted()) {
+				//Log.i("Thread", "got message");
+				try {
+					String message = (String) messages.take();
+					for(Socket s: clients){
+						OutputStream os = s.getOutputStream();
+						PrintWriter pw = new PrintWriter(os, true);
+						pw.println(message);
+						pw.flush();					
 					}
 
 				} catch (IOException e) {
 					e.printStackTrace();
-				}  catch (RemoteException e) {
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}  
 			}
 		}
 	}
-
 
     @Override
     public void onCreate() {
 		this.serverThread = new Thread(new ServerThread());
 		this.serverThread.start();
+		
     }
 
 	@Override

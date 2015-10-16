@@ -31,10 +31,12 @@ import android.widget.Toast;
 import core.User;
 import parse.ParseDatabase;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -98,6 +100,32 @@ public class LoginActivity extends Activity  {
 	        Log.e("IP", ex.toString());
 	    }
 	    return null;
+	}
+	
+	public static String getIPAddress() {
+	    try {
+	        List<NetworkInterface> interfaces = Collections.list(
+	                NetworkInterface.getNetworkInterfaces());
+	        for (NetworkInterface networkInterface : interfaces) {
+	            List<InetAddress> addresses = Collections.list(
+	                    networkInterface.getInetAddresses());
+	            for (InetAddress inetAddress : addresses) {
+	                if (!inetAddress.isLoopbackAddress()) {
+	                    String sAddress = inetAddress.getHostAddress().toUpperCase();
+	                    if(!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+	                        return sAddress;
+	                    } else {
+	                        int delim = sAddress.indexOf('%');
+	                        return delim < 0 ? sAddress : sAddress.substring(0,
+	                                delim);
+	                    }
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return "";
 	}
 	
 	public void checkLoginInfo(){
