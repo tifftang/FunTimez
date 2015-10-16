@@ -294,9 +294,10 @@ public class ChatroomActivity extends Activity {
 
 		@Override
 		public void run() {
-			Log.i("Thread", "client thread running");
+			Log.i("Naruto", "client thread running");
 			try {
-				Log.i("Thread", getChatroomHostIP("World"));
+				Log.d("Naruto", "in try --- :D");
+				Log.i("Naruto", getChatroomHostIP("World"));
 				socket = new Socket(getChatroomHostIP("World"), SERVERPORT);
 				
 				while(true){

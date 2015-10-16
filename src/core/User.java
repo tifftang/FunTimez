@@ -29,11 +29,11 @@ public class User {
 	
 	//true = removed chatroom
 	//false = if chatroom did not exist in the list to begin with
-	public boolean removeChatroom(String roomName){
+	public boolean removeChatroom(String roomID){
 		if(myChatrooms.isEmpty())
 			return false;
 		for(int index = 0; index < myChatrooms.size(); index++){
-			if(myChatrooms.get(index).getName().equals(roomName)){
+			if(myChatrooms.get(index).getID().equals(roomID)){
 				myChatrooms.remove(index);
 				return true;
 			}

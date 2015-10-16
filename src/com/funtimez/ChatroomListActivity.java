@@ -8,7 +8,9 @@ import com.funtimez.R.layout;
 import com.funtimez.R.menu;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import core.Chatroom;
 
 import core.User;
+import parse.ParseDatabase;
 
 //===ArrayAdapter works, but cannot display the columns===============
 /*public class ChatroomListActivity extends ListActivity {
@@ -55,8 +58,6 @@ public class ChatroomListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chatroom_list);
 		
-		User u = ((FunTimezApp) getApplicationContext()).getUser();
-
 //		SQLiteCursor cursor = createTestCursor();
 		
 
@@ -72,7 +73,7 @@ public class ChatroomListActivity extends Activity {
 		FunTimezApp app = ((FunTimezApp)getApplicationContext());
 		User user = app.getUser();
 		ArrayList<Chatroom> chats = user.getChatrooms();
-		
+
 		Log.i("FDSFSF", String.valueOf(chats.size()));
 		Button bSend = (Button) findViewById(R.id.button1);
 		bSend.setText(chats.get(0).getName());
@@ -84,7 +85,26 @@ public class ChatroomListActivity extends Activity {
 	        }
 	    });
 
+	    Button bNewChatroom = (Button) findViewById(R.id.addChatroom);
+	    bNewChatroom.setOnClickListener(new View.OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				//Make a dialog pop up asking for chatroom name
+				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+				builder.setMessage(R.string.error_incorrect_login_info)
+					   .setTitle(R.string.dialog_box_login_error)
+				       .setCancelable(false)
+				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   dialog.dismiss();
+				           }
+				       });
+				builder.create();
+				builder.show();
+			}
+	    	
+	    });
 	}
 //============================================================
 	
