@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -87,23 +88,29 @@ public class ChatroomListActivity extends Activity {
 
 	    Button bNewChatroom = (Button) findViewById(R.id.addChatroom);
 	    bNewChatroom.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
+				final EditText input = new EditText(ChatroomListActivity.this);
 				//Make a dialog pop up asking for chatroom name
 				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
-				builder.setMessage(R.string.error_incorrect_login_info)
-					   .setTitle(R.string.dialog_box_login_error)
-				       .setCancelable(false)
+				builder.setMessage(R.string.dialog_add_chatroom_msg)
+					   .setTitle(R.string.dialog_add_chatroom_title)
+					   .setView(input)
 				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
+				        	   ((FunTimezApp)getApplicationContext()).getParseData().createNewChatroom(input.getText().toString(), ((FunTimezApp)getApplicationContext()).getUser());
 				        	   dialog.dismiss();
 				           }
+				       })
+				       .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();							
+							}
 				       });
 				builder.create();
 				builder.show();
 			}
-	    	
 	    });
 	}
 //============================================================

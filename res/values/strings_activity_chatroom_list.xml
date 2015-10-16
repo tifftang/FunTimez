@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="button_add_chatroom">+</string>
+    <string name="dialog_add_chatroom_msg">Enter Chatroom Name (Optional)</string>
+    <string name="dialog_add_chatroom_title">New Chatroom</string>
     
 </resources>

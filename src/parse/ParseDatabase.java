@@ -78,7 +78,7 @@ public class ParseDatabase {
 		
 	}
 	
-public boolean isHost(String chatroomID, User u){
+	public boolean isHost(String chatroomID, User u){
 		boolean isChatroomHost = false;
 		ParseQuery<ParseObject> q = ParseQuery.getQuery("Chatroom");
 		q.whereEqualTo("objectId", chatroomID);
@@ -93,4 +93,10 @@ public boolean isHost(String chatroomID, User u){
 		}
 		return isChatroomHost;
 	}
+	
+	public boolean createNewChatroom(String chatroomName, User u){
+		
+		return true;
+	}
 }	
+
