@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import core.Chatroom;
+
 import core.User;
 
 //===ArrayAdapter works, but cannot display the columns===============
@@ -43,24 +44,29 @@ import core.User;
 	
 //===To revert back to using SimpleCursorAdapter=================
 public class ChatroomListActivity extends Activity {
+	
+	SimpleCursorAdapter myAdapter;
 
-	//SimpleCursorAdapter myAdapter;
-
+	public static final String TAG = "ChatroomListActivity";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chatroom_list);
 		
+		User u = ((FunTimezApp) getApplicationContext()).getUser();
+
 //		SQLiteCursor cursor = createTestCursor();
 		
-//		String[] from = createChatroomList();
-//		int[] to = {android.R.id.text1};
+
+/*		String[] from = createChatroomList();
+		int[] to = {android.R.id.text1};
 
 		//getApplicationContext()
-		//myAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);//, 0);
+
 		//myAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);
-		//getListView().setAdapter(myAdapter);
+		//getListView().setAdapter(myAdapter);*/
+
 		//setListAdapter(myAdapter);
 		FunTimezApp app = ((FunTimezApp)getApplicationContext());
 		User user = app.getUser();
@@ -68,6 +74,8 @@ public class ChatroomListActivity extends Activity {
 		Log.i("FDSFSF", String.valueOf(chats.size()));
 		Button bSend = (Button) findViewById(R.id.button1);
 		bSend.setText(chats.get(0).getName());
+
+
 	}
 //============================================================
 	
@@ -77,8 +85,9 @@ public class ChatroomListActivity extends Activity {
 	SQLiteCursor cursor = new SQLiteCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query);
 	return ;
 }*/
-	
-/*private String[] createChatroomList()
+
+	/*
+private String[] createChatroomList()
 {
 	//chatroomList = {chatroom name, chatroom id, list of users using chatroom}
 	String [] chatroomList = {"Bunnies Rule", "00000001", "u", "does this work"};
@@ -91,6 +100,7 @@ public class ChatroomListActivity extends Activity {
 
 	}*/
 	
+
 /*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

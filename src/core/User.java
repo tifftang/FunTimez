@@ -11,17 +11,16 @@ public class User {
 		
 	public User(String username){
 		myUsername = username;
+		myChatrooms = new ArrayList<Chatroom>();
 	}
 	
 	public User(String username, ArrayList<Chatroom> chatrooms){
-		
 		myUsername = username;
 		myChatrooms = chatrooms;
 	}
 		
 	public void setChatroomList(ArrayList<Chatroom> chList){
 		myChatrooms = new ArrayList<Chatroom> (chList);
-		Log.i("fdsadfa", String.valueOf(myChatrooms.size()));
 	}
 
 	public boolean addChatroom(Chatroom room){
