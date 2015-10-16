@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import core.User;
+import parse.ParseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +83,8 @@ public class LoginActivity extends Activity  {
 		ParseUser.logInInBackground(username, pw, new LogInCallback(){
 			public void done(ParseUser user, ParseException e){
 				if (user != null){
-					FunTimezApp app = ((FunTimezApp)getApplicationContext());
-					app.setUser(new User(username));
-					//if correct, proceed to ChatroomListActivity
+					//if correct, update user then proceed to ChatroomListActivity
+					updateUser(username);
 					intent = new Intent(LoginActivity.this, com.funtimez.ChatroomListActivity.class);
 					startActivity(intent);
 				}
@@ -110,4 +110,15 @@ public class LoginActivity extends Activity  {
 		});
 	}
 	
+	private void updateUser(String username){
+		User u = new User(username);
+
+		//set the user of this app
+		FunTimezApp app = ((FunTimezApp)getApplicationContext());		
+		app.setUser(u);
+
+		//update user's chatroom list
+		ParseDatabase data = app.getParseData();
+		data.setChatroomList(u);
+	}
 }
