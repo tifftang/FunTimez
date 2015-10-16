@@ -114,7 +114,7 @@ public class LoginActivity extends Activity  {
 					String ip = getLocalIpAddress();
 					user.put("IP", ip);
 					app.setIP(ip);
-
+					user.saveInBackground();
 					intent = new Intent(LoginActivity.this, com.funtimez.ChatroomListActivity.class);
 					startActivity(intent);
 				}

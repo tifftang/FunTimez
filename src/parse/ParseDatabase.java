@@ -20,6 +20,7 @@ public class ParseDatabase {
 	
 	public static final String TAG = "ParseDatabase";
 	
+	@SuppressWarnings("unchecked")
 	public void setChatroomList(User u){
 		ArrayList<Chatroom> userChatrooms = new ArrayList<Chatroom>();
 		ArrayList<Object> chatroomIDs = new ArrayList<Object>();
@@ -73,6 +74,8 @@ public class ParseDatabase {
 		}
 
 		u.setChatroomList(userChatrooms);
+		Log.i("hihi", userChatrooms.get(0).toString());
+		
 	}
 	
 public boolean isHost(String chatroomID){

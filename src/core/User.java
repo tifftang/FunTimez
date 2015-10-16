@@ -3,6 +3,8 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 public class User {
 	private String myUsername;
 	private ArrayList<Chatroom> myChatrooms;
@@ -18,7 +20,7 @@ public class User {
 	}
 		
 	public void setChatroomList(ArrayList<Chatroom> chList){
-		myChatrooms = chList;
+		myChatrooms = new ArrayList<Chatroom> (chList);
 	}
 
 	public boolean addChatroom(Chatroom room){

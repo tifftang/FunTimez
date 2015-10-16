@@ -15,7 +15,13 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -290,8 +296,9 @@ public class ChatroomActivity extends Activity {
 		public void run() {
 			Log.i("Thread", "client thread running");
 			try {
-				Log.i("Thread", getLocalIpAddress());
+				Log.i("Thread", getChatroomHostIP("World"));
 				socket = new Socket(getLocalIpAddress(), SERVERPORT);
+				
 				while(true){
 					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					String read = input.readLine();
@@ -306,6 +313,23 @@ public class ChatroomActivity extends Activity {
 
 		}
 
+	}
+	
+	public String getChatroomHostIP(String username){
+		ParseQuery<ParseUser> q = ParseUser.getQuery();
+		String ip = "";
+		q.whereEqualTo("username", "World");
+		try {
+			List<ParseUser> users = q.find();
+			if(users != null){
+				ip = (String) users.get(0).get("IP");
+			}else
+				Log.e("ChatroomActivity", "No such user in Parse.");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ip;
 	}
 	
 	class updateUIThread implements Runnable {
