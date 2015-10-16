@@ -297,7 +297,7 @@ public class ChatroomActivity extends Activity {
 			Log.i("Thread", "client thread running");
 			try {
 				Log.i("Thread", getChatroomHostIP("World"));
-				socket = new Socket(getLocalIpAddress(), SERVERPORT);
+				socket = new Socket(getChatroomHostIP("World"), SERVERPORT);
 				
 				while(true){
 					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
