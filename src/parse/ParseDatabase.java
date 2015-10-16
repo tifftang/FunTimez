@@ -75,21 +75,17 @@ public class ParseDatabase {
 		u.setChatroomList(userChatrooms);
 	}
 	
-/*	public boolean isHost(String chatroomName){
+public boolean isHost(String chatroomID){
 		boolean isChatroomHost = false;
-		ParseQuery<ParseObject> q = ParseQuery.getQuery("hostName");
-		q.whereEqualTo("name", chatroomName);
-		q.findInBackground(new FindCallback<ParseObject>(){
-			public void done(List<ParseObject> host, ParseException e){
-				if (e == null){
-					if(host.get(0).equals(username))
-						isChatroomHost = true;
-				}
-				else{
-					Log.e(TAG, e.toString());
-				}
-			}
-		});
+		ParseQuery<ParseObject> q = ParseQuery.getQuery("Chatroom");
+		q.whereEqualTo("objectId", chatroomID);
+		try {
+			List<ParseObject> chatrooms = q.find();
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return isChatroomHost;
-	}*/
+	}
 }	
