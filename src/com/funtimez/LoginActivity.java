@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -30,7 +31,11 @@ import android.widget.Toast;
 import core.User;
 import parse.ParseDatabase;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import com.funtimez.R;
@@ -75,7 +80,26 @@ public class LoginActivity extends Activity  {
 			}
 		});
 	}
-
+	/* 
+	 * Lifted from stack overflow, grabs the ip address of this device
+	 */
+	public String getLocalIpAddress() {
+	    try {
+	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+	            NetworkInterface intf = en.nextElement();
+	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+	                InetAddress inetAddress = enumIpAddr.nextElement();
+	                if (!inetAddress.isLoopbackAddress()) {
+	                    return inetAddress.getHostAddress().toString();
+	                }
+	            }
+	        }
+	    } catch (SocketException ex) {
+	        Log.e("IP", ex.toString());
+	    }
+	    return null;
+	}
+	
 	public void checkLoginInfo(){
 		final String username = ((EditText)findViewById(R.id.username)).getText().toString();
 		String pw = ((EditText)findViewById(R.id.password)).getText().toString();
@@ -85,6 +109,13 @@ public class LoginActivity extends Activity  {
 				if (user != null){
 					//if correct, update user then proceed to ChatroomListActivity
 					updateUser(username);
+
+					FunTimezApp app = ((FunTimezApp)getApplicationContext());
+					app.setUser(new User(username));
+					String ip = getLocalIpAddress();
+					user.put("IP", ip);
+					app.setIP(ip);
+
 					intent = new Intent(LoginActivity.this, com.funtimez.ChatroomListActivity.class);
 					startActivity(intent);
 				}

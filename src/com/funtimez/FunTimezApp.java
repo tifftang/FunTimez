@@ -9,7 +9,8 @@ import parse.ParseDatabase;
 public class FunTimezApp extends Application {
 	private User user;
 	private ParseDatabase data;
-	
+	private String ip;
+
 	public void onCreate() {
 		data = new ParseDatabase();
 		// Set up connection to Parse
@@ -26,5 +27,13 @@ public class FunTimezApp extends Application {
 	
 	public ParseDatabase getParseData(){
 		return data;
+	}
+
+	public void setIP(String ip){
+		this.ip = ip;
+	}
+	
+	public String getIP(){
+		return ip;
 	}
 }

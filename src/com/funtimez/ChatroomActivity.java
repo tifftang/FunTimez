@@ -1,10 +1,13 @@
 package com.funtimez;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -56,6 +59,7 @@ public class ChatroomActivity extends Activity {
 	private String username;
 	private String m_Text = "";
 	private FileHelper fileHelper = new FileHelper();
+	private String ipaddress;
 
     /**
      * Class for interacting with the main interface of the service.
@@ -70,6 +74,7 @@ public class ChatroomActivity extends Activity {
             mService = ((Server.MyLocalBinder) service).getService();
             mService.setHandler(mHandler);
             mBound = true;
+
             new Thread(new ClientThread()).start();
         }
 
@@ -147,7 +152,6 @@ public class ChatroomActivity extends Activity {
 				    public void onClick(DialogInterface dialog, int which) {
 				        m_Text = input.getText().toString();
 				        int pixels = m_Text.length() * 80;
-				        // TODO: Create button
 				         final Button myButton = new Button(ChatroomActivity.this);
 		                 myButton.setText(m_Text);
 		                 final LinearLayout ll = (LinearLayout)findViewById(R.id.button_layout);
@@ -159,6 +163,7 @@ public class ChatroomActivity extends Activity {
 		                 myButton.setOnClickListener(new OnClickListener() {
 		                	    public void onClick(View v)
 		                	    {
+		                	    	
 		                	        CharSequence shortcut = myButton.getText();
 		                	        send_text.append(shortcut);
 		                	        send_text.setSelection(send_text.getText().length());
@@ -222,36 +227,58 @@ public class ChatroomActivity extends Activity {
 		bSave.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String textToStore = text.getText().toString();
-				String[] lines = textToStore.split( "\n" );
-			    try {
-			    	File dir = fileHelper.getChatStorageDir("test");
-			    	FileOutputStream writer = new FileOutputStream(new File(dir + "/test.html"));
-			    	writer.write("<html>".getBytes());
-			    	writer.write("<head>".getBytes());
-			    	writer.write("<title>Chat History</title>".getBytes());
-			    	writer.write("<body>".getBytes());
-			    	writer.write("<table width=\"100%%\" cellpadding=\"1\" cellspacing=\"0\">".getBytes());
+			    AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomActivity.this);
+				builder.setTitle("Input file name");
+				// Set up the input
+				final EditText input = new EditText(ChatroomActivity.this);
+				// Set input type
+				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				builder.setView(input);
+				// Set up the buttons
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+				    @Override
+				    public void onClick(DialogInterface dialog, int which) {
+				        m_Text = input.getText().toString();
+						String textToStore = text.getText().toString();
+						String[] lines = textToStore.split( "\n" );
+				        File dir = fileHelper.getChatStorageDir("test");
+				        FileOutputStream writer;
+						try {
+							writer = new FileOutputStream(new File(dir + "/" + m_Text + ".html"));
+					    	writer.write("<html>".getBytes());
+					    	writer.write("<head>".getBytes());
+					    	writer.write("<title>Chat History</title>".getBytes());
+					    	writer.write("<body>".getBytes());
+					    	writer.write("<table width=\"100%%\" cellpadding=\"1\" cellspacing=\"0\">".getBytes());
 
-			    	for(String l: lines){
-			    		String msg = "<tr><td class=\"msg\" width=\"100%\"><FONT face=\"Arial\" size=\"2\" color=\"#000000\">" + l + "</FONT></td></tr>";
-			    		writer.write(msg.getBytes());
-			    	}
-			    	writer.write("</body>".getBytes());
-			    	writer.write("</body>".getBytes());
-			    	writer.write("</html>".getBytes());
-					writer.flush();
-					writer.close();
-					Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
-			    	
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					    	for(String l: lines){
+					    		String msg = "<tr><td class=\"msg\" width=\"100%\"><FONT face=\"Arial\" size=\"2\" color=\"#000000\">" + l + "</FONT></td></tr>";
+					    		writer.write(msg.getBytes());
+					    	}
+					    	writer.write("</body>".getBytes());
+					    	writer.write("</body>".getBytes());
+					    	writer.write("</html>".getBytes());
+							writer.flush();
+							writer.close();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
-
-				
+						Toast.makeText(getApplicationContext(), "Saving", Toast.LENGTH_SHORT).show();
+				    }
+				    
+				});
+				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				    @Override
+				    public void onClick(DialogInterface dialog, int which) {
+				        dialog.cancel();
+				    }
+				});
+				builder.show();
 
 			}
 		});
@@ -265,6 +292,11 @@ public class ChatroomActivity extends Activity {
 			try {
 				Log.i("Thread", getLocalIpAddress());
 				socket = new Socket(getLocalIpAddress(), SERVERPORT);
+				while(true){
+					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					String read = input.readLine();
+					updateConversationHandler.post(new updateUIThread(read));
+				}
 			
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
@@ -285,7 +317,7 @@ public class ChatroomActivity extends Activity {
 
 		@Override
 		public void run() {
-			text.setText(text.getText().toString()+ username + "says: "+ msg + "\n");
+			text.setText(text.getText().toString()+ username + " says: "+ msg + "\n");
 		}
 	}
 	/* 
@@ -327,7 +359,7 @@ public class ChatroomActivity extends Activity {
             switch (msg.what) {
                 case MSG_SEND:
                 	Bundle bundle = msg.getData();
-                	updateConversationHandler.post(new updateUIThread(bundle.getString("msg")));
+                	//updateConversationHandler.post(new updateUIThread(bundle.getString("msg")));
                 	break;
                 default:
                 	super.handleMessage(msg);

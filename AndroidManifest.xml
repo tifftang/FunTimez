@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="18"
+        android:minSdkVersion="15"
         android:targetSdkVersion="21" />
 
     <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -25,7 +25,10 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" >
-
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter> 
         </activity>
         <activity
             android:name=".FunTimezActivity"
@@ -42,12 +45,6 @@
         <activity
             android:name=".ChatroomActivity"
             android:label="@string/title_activity_chatroom" >
-
-             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> 
         </activity>
         <activity
             android:name=".ChatroomListActivity"

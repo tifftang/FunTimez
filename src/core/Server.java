@@ -2,6 +2,9 @@ package core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -57,11 +60,15 @@ public class Server extends Service {
 					while(true){
 					
 					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					OutputStream os = socket.getOutputStream();
+					PrintWriter pw = new PrintWriter(os, true);
 					String read = input.readLine();
 					Log.i("Thread", read);
 					Message msg = Message.obtain(null, ChatroomActivity.MSG_SEND, 0, 0); 
 					Bundle bundle = new Bundle();
 					bundle.putString("msg", read);
+					pw.println(read);
+					pw.flush();
 					msg.setData(bundle);
 						mMessenger.send(msg);
 					}
