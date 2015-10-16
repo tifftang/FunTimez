@@ -111,7 +111,7 @@ public class ChatroomActivity extends Activity {
 
 		text = (TextView) findViewById(R.id.display_text);
 		app = ((FunTimezApp)getApplicationContext());
-		//username = app.getUser().getUsername();
+		username = app.getUser().getUsername();
 		final EditText send_text = (EditText) findViewById(R.id.send_text);
 		text.setMovementMethod(new ScrollingMovementMethod());
 		updateConversationHandler = new Handler();
@@ -127,6 +127,7 @@ public class ChatroomActivity extends Activity {
 						PrintWriter out = new PrintWriter(new BufferedWriter(
 								new OutputStreamWriter(socket.getOutputStream())),
 								true);
+						//TODO:
 						out.println(send_text.getText().toString());
 					}else{
 						Toast.makeText(getApplicationContext(), "Not Connected", Toast.LENGTH_SHORT).show();	
@@ -294,11 +295,15 @@ public class ChatroomActivity extends Activity {
 
 		@Override
 		public void run() {
-			Log.i("Naruto", "client thread running");
+			Log.i("Thread", "client thread running");
+			Log.i("Threfsdfad", getChatroomHostIP("World"));
+
 			try {
-				Log.d("Naruto", "in try --- :D");
-				Log.i("Naruto", getChatroomHostIP("World"));
+				Log.i("Threfsdfad", getChatroomHostIP("World"));
 				socket = new Socket(getChatroomHostIP("World"), SERVERPORT);
+				if (socket.isConnected()){
+					Log.i("Threfsdfad", "we are connnn");
+				}
 				
 				while(true){
 					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -330,6 +335,7 @@ public class ChatroomActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Log.i("IP OF ME", ip);
 		return ip;
 	}
 	
