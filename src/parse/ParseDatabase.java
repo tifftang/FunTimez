@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.funtimez.ChatroomListActivity;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
-import android.content.Context;
 import com.parse.ParseException;
 import android.util.Log;
 import core.Chatroom;
@@ -23,20 +24,7 @@ public class ParseDatabase {
 	@SuppressWarnings("unchecked")
 	public void setChatroomList(User u){
 		ArrayList<Chatroom> userChatrooms = new ArrayList<Chatroom>();
-		ArrayList<Object> chatroomIDs = new ArrayList<Object>();
-		
-		ParseQuery<ParseUser> q = ParseUser.getQuery();
-		q.whereEqualTo("username", u.getUsername());
-		try {
-			List<ParseUser> users = q.find();
-			if(users != null){
-				chatroomIDs = (ArrayList<Object>) users.get(0).get("chatrooms");
-			}else
-				Log.e(TAG, "No such user in Parse.");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ArrayList<Object> chatroomIDs = getUserChatroomList(u);
 		
 		for(int index = 0; index < chatroomIDs.size(); index++){
 			String id = (chatroomIDs.get(index)).toString();
@@ -60,15 +48,8 @@ public class ParseDatabase {
 				e.printStackTrace();
 			}
 			
-			ArrayList<String> userListString = new ArrayList<String>();
-			
-			for (int i = 0; i < userList.size(); i++)
-			{
-				if(userList.get(i) != null)
-				{
-					userListString.add(userList.get(i).toString());
-				}
-			}
+			ArrayList<String> userListString = userObjectToString(userList);
+		
 			Chatroom cr = new Chatroom(id, chatroomName, userListString, host);
 			userChatrooms.add(cr);
 		}
@@ -77,7 +58,52 @@ public class ParseDatabase {
 		Log.i("hihi", userChatrooms.get(0).toString());
 		
 	}
+
+	//returns an empty list if there are no chatrooms for that user
+	private ArrayList<Object> getUserChatroomList(User u) {
+		ArrayList<Object> chatroomIDs = new ArrayList<Object>();
+		
+		ParseQuery<ParseUser> q = ParseUser.getQuery();
+		q.whereEqualTo("username", u.getUsername());
+		try {
+			List<ParseUser> users = q.find();
+			if(users != null){
+				chatroomIDs = (ArrayList<Object>) users.get(0).get("chatrooms");
+			}else
+				Log.e(TAG, "No such user in Parse.");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return chatroomIDs;
+	}
+
+	//returns an empty list if there are no User objects to convert to string
+	private ArrayList<String> userObjectToString(ArrayList<Object> userList) {
+		ArrayList<String> userListString = new ArrayList<String>();
+		
+		for (int i = 0; i < userList.size(); i++)
+			if(userList.get(i) != null)
+				userListString.add(userList.get(i).toString());
+		
+		return userListString;
+	}
 	
+	public void setNumHostChatrooms(User u){
+		ParseQuery<ParseUser> q = ParseUser.getQuery();
+		q.whereEqualTo("username", u.getUsername());
+		try {
+			List<ParseUser> users = q.find();
+			int hostCount = (Integer) users.get(0).get("numChatroomHosted");
+			u.setNumHostChatrooms(hostCount);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//true: User u = host of chatroom with chatroomID
+	//false: User u != host of chatroom with chatroomID
 	public boolean isHost(String chatroomID, User u){
 		boolean isChatroomHost = false;
 		ParseQuery<ParseObject> q = ParseQuery.getQuery("Chatroom");
@@ -94,9 +120,75 @@ public class ParseDatabase {
 		return isChatroomHost;
 	}
 	
-	public boolean createNewChatroom(String chatroomName, User u){
+	//store new chatroom information in Parse and update related variables in User class and Parse
+	public void createNewChatroom(Chatroom cr, User u){
+		ArrayList<String> userList = new ArrayList<String>();
+		userList.add(u.getUsername());
+		ParseObject chatroom = new ParseObject("Chatroom");
+		chatroom.put("name", cr.getName());
+		chatroom.put("userList", userList);
+		chatroom.put("hostName", u.getUsername());
+		chatroom.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if(e == null){
+			    	Log.i(TAG, "Successfully created chatroom.");
+				}
+				else
+					Log.e(TAG, e.toString());
+			}
+		});
 		
-		return true;
+		try {
+			chatroom.fetch();
+			//update chatroom ID in chatroom object in User object
+			u.setChatroomID(cr, chatroom.getObjectId());
+		} catch (ParseException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
+		//increment record of number of chatrooms this user is hosting
+		//and add chatroom ID to User's chatroom list in Parse
+		ParseQuery<ParseUser> q = ParseUser.getQuery();
+		q.whereEqualTo("username", u.getUsername());
+		try {
+			List<ParseUser> users = q.find();
+			users.get(0).increment("numChatroomHosted");
+			users.get(0).add("chatrooms", cr.getID());
+			users.get(0).saveInBackground(new SaveCallback() {
+				public void done(ParseException e) {
+					if(e == null){
+				    	Log.i(TAG, "Successfully updated User in Parse.");
+					}
+					else
+						Log.e(TAG, e.toString());
+				}
+			});
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
+	
+	/*
+	//query Parse to see if User u is at maximum number of chatrooms one can host at a time
+	private boolean isAtMaxChatrooms(User u) {
+		ParseQuery<ParseUser> q = ParseUser.getQuery();
+		q.whereEqualTo("username", u.getUsername());
+		try {
+			List<ParseUser> users = q.find();
+			if(users != null){
+				int numChatroomHosted = (Integer) users.get(0).get("numChatroomHosted");
+				if (numChatroomHosted < User.MAX_CHATROOMS_HOST){
+					return false;
+				}
+			}else
+				Log.e(TAG, "No such user in Parse.");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}*/	
 }	
 

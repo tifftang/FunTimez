@@ -178,5 +178,8 @@ public class LoginActivity extends Activity  {
 		//update user's chatroom list
 		ParseDatabase data = app.getParseData();
 		data.setChatroomList(u);
+		
+		//update user's chatroom host count
+		data.setNumHostChatrooms(u);
 	}
 }

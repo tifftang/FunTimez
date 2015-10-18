@@ -6,6 +6,7 @@ import com.funtimez.R;
 import com.funtimez.R.id;
 import com.funtimez.R.layout;
 import com.funtimez.R.menu;
+import com.parse.ParseQuery;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -86,11 +87,20 @@ public class ChatroomListActivity extends Activity {
 	        }
 	    });
 
+	    addNewChatroomButtonListener();
+	}
+//============================================================
+
+	//when pressed:
+	//-add new room to User class
+	//-add new room to Parse
+	private void addNewChatroomButtonListener() {
 	    Button bNewChatroom = (Button) findViewById(R.id.addChatroom);
 	    bNewChatroom.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				final EditText input = new EditText(ChatroomListActivity.this);
+				
 				//Make a dialog pop up asking for chatroom name
 				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
 				builder.setMessage(R.string.dialog_add_chatroom_msg)
@@ -98,8 +108,40 @@ public class ChatroomListActivity extends Activity {
 					   .setView(input)
 				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
-				        	   ((FunTimezApp)getApplicationContext()).getParseData().createNewChatroom(input.getText().toString(), ((FunTimezApp)getApplicationContext()).getUser());
-				        	   dialog.dismiss();
+				        	   String chatroomName = input.getText().toString();
+				        	   User user = ((FunTimezApp)getApplicationContext()).getUser();
+				        	   ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
+				        	   				   
+				        	   //check to see if user is hosting max number of chatrooms already
+				        	   if(user.isAtMaxChatroomsToHost()){
+			        			   Toast.makeText(getApplicationContext(), "You have already reached maximum chatrooms you can to host at a given time.", Toast.LENGTH_LONG).show();
+			        			   dialog.dismiss();
+				        	   }
+				        	   else{
+					        	   //attempt to add chatroom to User object
+				        		   Chatroom cr = new Chatroom();
+				        		   
+				        		   int setNameResult = cr.setName(chatroomName);
+				        		   //results > 0 require user to re-enter chatroom name
+				        		   if(setNameResult == 1){
+				        			   Toast.makeText(getApplicationContext(), "Chatroom name needs to be under " + Chatroom.NAME_LENGTH_MAX_LIMIT + " characters long.", Toast.LENGTH_SHORT).show();
+				        		   }
+				        		   else if(setNameResult == 2){
+				        			   Toast.makeText(getApplicationContext(), "Chatroom name needs to be at least " + Chatroom.NAME_LENGTH_MIN_LIMIT + " characters long.", Toast.LENGTH_SHORT).show();
+				        		   }
+				        		   //continue with adding chatroom in User class
+				        		   else{
+					        		   cr.addUsers(user.getUsername());
+					        		   cr.setHost(user.getUsername());
+					        		   user.addChatroom(cr);
+					        		   user.incrementNumHostChatrooms();
+						        	   
+					        		   //add chatroom to Parse
+						        	   data.createNewChatroom(cr, user);
+						        	   
+						        	   dialog.dismiss();
+				        		   }
+				        	   }
 				           }
 				       })
 				       .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
@@ -113,7 +155,6 @@ public class ChatroomListActivity extends Activity {
 			}
 	    });
 	}
-//============================================================
 	
 //---testing purposes------------------------
 /*private SQLiteCursor createTestCursor()
