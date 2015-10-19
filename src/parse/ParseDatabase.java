@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.funtimez.ChatroomListActivity;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -147,7 +148,7 @@ public class ParseDatabase {
 			e2.printStackTrace();
 		}
 		
-		//increment record of number of chatrooms this user is hosting
+		//increment number of chatrooms this user is hosting
 		//and add chatroom ID to User's chatroom list in Parse
 		ParseQuery<ParseUser> q = ParseUser.getQuery();
 		q.whereEqualTo("username", u.getUsername());
@@ -170,25 +171,86 @@ public class ParseDatabase {
 		}
 	}
 	
-	/*
-	//query Parse to see if User u is at maximum number of chatrooms one can host at a time
-	private boolean isAtMaxChatrooms(User u) {
+	public void deleteChatroom(Chatroom cr, User u){
+		boolean isHost = cr.isHost(u.getUsername());
+		//decrement number of chatrooms this user is hosting
+		//and delete chatroom ID from User's chatroom list in Parse
 		ParseQuery<ParseUser> q = ParseUser.getQuery();
 		q.whereEqualTo("username", u.getUsername());
 		try {
 			List<ParseUser> users = q.find();
-			if(users != null){
-				int numChatroomHosted = (Integer) users.get(0).get("numChatroomHosted");
-				if (numChatroomHosted < User.MAX_CHATROOMS_HOST){
-					return false;
+			
+			if(isHost)
+				users.get(0).increment("numChatroomHosted", -1);
+			//idList contains the id value that needs to be removed
+			ArrayList<String> idList = new ArrayList<String>();
+			idList.add(cr.getID());
+			users.get(0).removeAll("chatrooms", idList);
+			users.get(0).saveInBackground(new SaveCallback() {
+				public void done(ParseException e) {
+					if(e == null){
+				    	Log.i(TAG, "Successfully updated User in Parse.");
+					}
+					else
+						Log.e(TAG, e.toString());
 				}
-			}else
-				Log.e(TAG, "No such user in Parse.");
-		} catch (ParseException e) {
+			});
+		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
-		return true;
-	}*/	
+		
+		//delete chatroom if User u is host
+		if(isHost){
+			ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Chatroom");
+			query.whereEqualTo("objectId", cr.getID());
+			query.findInBackground(new FindCallback<ParseObject>() {
+				public void done(List<ParseObject> chatrooms, ParseException e) {
+					if(e == null){
+				    	chatrooms.get(0).deleteInBackground(new DeleteCallback(){
+							@Override
+							public void done(ParseException e2) {
+								if(e2 == null){
+									Log.i(TAG, "Successfully deleted Chatroom in Parse.");
+								}
+								else{
+									Log.e(TAG, e2.toString());
+								}
+							}
+				    	});
+					}
+					else
+						Log.e(TAG, e.toString());
+				}
+			});
+		}
+		//otherwise delete User u from userList of Chatroom
+		else{
+			ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Chatroom");
+			query.whereEqualTo("objectId", cr.getID());
+			List<ParseObject> chatrooms;
+			try {
+				chatrooms = query.find();
+				//users = array list of users to be removed
+				ArrayList<String> users = new ArrayList<String>();
+				users.add(u.getUsername());
+				chatrooms.get(0).removeAll("userList", users);
+				chatrooms.get(0).saveInBackground(new SaveCallback(){
+					@Override
+					public void done(ParseException e3) {
+						if(e3 == null){
+							Log.i(TAG, "Successfully deleted User from Chatroom's userList in Parse.");
+						}
+						else{
+							Log.e(TAG, e3.toString());
+						}
+					}
+				});
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }	
 

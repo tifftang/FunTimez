@@ -3,5 +3,8 @@
     <string name="button_add_chatroom">+</string>
     <string name="dialog_add_chatroom_msg">Enter Chatroom Name (Optional)</string>
     <string name="dialog_add_chatroom_title">New Chatroom</string>
+    <string name="dialog_chatroom_id_title">Chatroom ID</string>
+    <string name="dialog_delete_chatroom_title">Delete Chatroom</string>
+    <string name="dialog_delete_chatroom_msg">You are about to delete the chatroom. Are you sure you want to continue?</string>
     
 </resources>

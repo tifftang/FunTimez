@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -88,6 +89,18 @@ public class ChatroomListActivity extends Activity {
 	    });
 
 	    addNewChatroomButtonListener();
+	    
+		Button testDelete = (Button) findViewById(R.id.button3);
+		testDelete.setText(chats.get(1).getName());
+		testDelete.setOnClickListener(new View.OnClickListener() {
+	        @Override
+	        public void onClick(View v) {
+
+	        }
+	    });
+	    
+	    addDeleteChatroomButtonListener(testDelete);
+	    addShowChatroomIDButtonListener();
 	}
 //============================================================
 
@@ -100,6 +113,8 @@ public class ChatroomListActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				final EditText input = new EditText(ChatroomListActivity.this);
+				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				input.setMaxLines(1);
 				
 				//Make a dialog pop up asking for chatroom name
 				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
@@ -138,7 +153,7 @@ public class ChatroomListActivity extends Activity {
 						        	   
 					        		   //add chatroom to Parse
 						        	   data.createNewChatroom(cr, user);
-						        	   
+printAllValues();					        	   
 						        	   dialog.dismiss();
 				        		   }
 				        	   }
@@ -156,7 +171,119 @@ public class ChatroomListActivity extends Activity {
 	    });
 	}
 	
+	private void addShowChatroomIDButtonListener() {
+	    Button bChatroom = (Button) findViewById(R.id.button4);
+	    bChatroom.setText("< ID");
+	    bChatroom.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Chatroom cr = ((FunTimezApp)getApplicationContext()).getUser().getChatrooms().get(1);
+
+				//Make a dialog pop up asking to confirm
+				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+				builder.setMessage("Chatroom ID: " + cr.getID())
+					   .setTitle(R.string.dialog_chatroom_id_title)
+					   .setCancelable(false)
+				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   dialog.dismiss();
+				           }
+				       });
+				builder.create();
+				builder.show();
+			}
+	    });
+	}
+	
+	//long press to delete chatroom
+	private void addDeleteChatroomButtonListener(Button bChatroom) {
+		bChatroom.setOnLongClickListener(new View.OnLongClickListener() {
+	        @Override
+	        public boolean onLongClick(View v) {
+				//Make a dialog pop up asking for chatroom name
+				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+				builder.setMessage(R.string.dialog_delete_chatroom_msg)
+					   .setTitle(R.string.dialog_delete_chatroom_title)
+				       .setPositiveButton(R.string.button_delete, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   User user = ((FunTimezApp)getApplicationContext()).getUser();
+				        	   ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
+
+				        	   //TODO: need to be dynamic later
+				        	   Chatroom cr = user.getChatrooms().get(1);
+			        		   
+			        		   //attempt to delete chatroom from Parse User's chatroom list and delete chatroom from parse if no one else is using
+			        		   data.deleteChatroom(cr, user);
+				        	   
+			        		   //attempt to delete chatroom locally in User object
+			        		   
+			        		   //if user is host to the chatroom, decrement counter that keeps track of number of chatrooms the user is hosting for
+			        		   boolean isHost = cr.isHost(user.getUsername());
+				        	   if(isHost)
+			        			   user.decrementNumHostChatrooms();
+			        		   //delete chatroom from user's list of chatrooms
+			        		   user.removeChatroom(cr.getID());
+
+			        		   //TODO: next time make it find new host. for now delete chatroom if host deletes
+			        		   //attempt to delete user from Chatroom object's userlist
+			        		   cr.removeUser(user.getUsername());
+			        		   if(isHost)
+			        			   cr.setHost("");
+			        		   
+				        	   dialog.dismiss();
+	printAllValues();
+			        	   }
+
+				       })
+				       .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();							
+							}
+				       });
+				builder.create();
+				builder.show();
+				return true;
+	        }
+	    });
+	}
+	
+//Left off at debug! why buttons showing weird stuff	
+	
+	//TODO: ====code invite button next!===========
+	
 //---testing purposes------------------------
+
+	private void printAllValues(){
+		FunTimezApp app = ((FunTimezApp)getApplicationContext());
+		User user = app.getUser();
+		ArrayList<Chatroom> chatroomList = user.getChatrooms();
+		
+		//print User values
+		Log.d("**PRINTING VARIABLE VALUES**", "User Class -- Username: " + user.getUsername());
+		Log.d("**PRINTING VARIABLE VALUES**", "User Class -- Hosting # of Chatrooms: " + user.getNumHostChatrooms());
+		String chatrooms = "";
+		for(Chatroom cr : chatroomList){
+			chatrooms += cr.getID() + ", ";
+		}
+		Log.d("**PRINTING VARIABLE VALUES**", "User Class -- Chatroom IDs: " + chatrooms);
+		
+		//print Chatroom values
+		String chatroomValues = "";
+		String userListString = "";
+		for(int index = 0; index < chatroomList.size(); index++){
+			Chatroom cr = chatroomList.get(index);
+			for(String username : cr.getUserList()){
+				userListString += username + ", ";
+			}
+			chatroomValues += "[" + index + "]: [ID: " + cr.getID() + "][Name: " + cr.getName() + "][Host: " + cr.getHost() + "][User List: " + userListString + "]";
+			Log.d("**PRINTING VARIABLE VALUES**", "Chatroom Class -- " + chatroomValues);
+			chatroomValues = "";
+			userListString = "";
+		}
+	}
+	
 /*private SQLiteCursor createTestCursor()
 {
 	SQLiteCursor cursor = new SQLiteCursor(SQLiteCursorDriver driver, String editTable, SQLiteQuery query);
