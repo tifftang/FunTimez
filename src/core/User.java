@@ -25,7 +25,7 @@ public class User {
 	}
 		
 	public void setChatroomList(ArrayList<Chatroom> chList){
-		myChatrooms = new ArrayList<Chatroom> (chList);
+		myChatrooms = chList;
 	}
 
 	public boolean addChatroom(Chatroom room){

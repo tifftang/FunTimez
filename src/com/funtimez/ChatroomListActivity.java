@@ -183,7 +183,7 @@ printAllValues();
 
 				//Make a dialog pop up asking to confirm
 				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
-				builder.setMessage("Chatroom ID: " + cr.getID())
+				builder.setMessage(cr.getID())
 					   .setTitle(R.string.dialog_chatroom_id_title)
 					   .setCancelable(false)
 				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {

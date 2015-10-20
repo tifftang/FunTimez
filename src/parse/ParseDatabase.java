@@ -219,6 +219,9 @@ public class ParseDatabase {
 		ParseUser.logOut();
 	}
 	
-	
+	public void refresh(User u){
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		//TODO: incomplete method
+	}
 }	
 
