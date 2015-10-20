@@ -1,13 +1,10 @@
 package parse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.funtimez.ChatroomListActivity;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -25,7 +22,7 @@ public class ParseDatabase {
 	@SuppressWarnings("unchecked")
 	public void setChatroomList(User u){
 		ArrayList<Chatroom> userChatrooms = new ArrayList<Chatroom>();
-		ArrayList<Object> chatroomIDs = getUserChatroomList(u);
+		ArrayList<Object> chatroomIDs = getUserChatroomList();
 		
 		for(int index = 0; index < chatroomIDs.size(); index++){
 			String id = (chatroomIDs.get(index)).toString();
@@ -57,26 +54,12 @@ public class ParseDatabase {
 
 		u.setChatroomList(userChatrooms);
 		Log.i("hihi", userChatrooms.get(0).toString());
-		
 	}
 
 	//returns an empty list if there are no chatrooms for that user
-	private ArrayList<Object> getUserChatroomList(User u) {
-		ArrayList<Object> chatroomIDs = new ArrayList<Object>();
-		
-		ParseQuery<ParseUser> q = ParseUser.getQuery();
-		q.whereEqualTo("username", u.getUsername());
-		try {
-			List<ParseUser> users = q.find();
-			if(users != null){
-				chatroomIDs = (ArrayList<Object>) users.get(0).get("chatrooms");
-			}else
-				Log.e(TAG, "No such user in Parse.");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return chatroomIDs;
+	private ArrayList<Object> getUserChatroomList() {
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		return (ArrayList<Object>) currentUser.get("chatrooms");
 	}
 
 	//returns an empty list if there are no User objects to convert to string
@@ -91,16 +74,9 @@ public class ParseDatabase {
 	}
 	
 	public void setNumHostChatrooms(User u){
-		ParseQuery<ParseUser> q = ParseUser.getQuery();
-		q.whereEqualTo("username", u.getUsername());
-		try {
-			List<ParseUser> users = q.find();
-			int hostCount = (Integer) users.get(0).get("numChatroomHosted");
-			u.setNumHostChatrooms(hostCount);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		int hostCount = (Integer) currentUser.get("numChatroomHosted");
+		u.setNumHostChatrooms(hostCount);
 	}
 	
 	//true: User u = host of chatroom with chatroomID
@@ -150,55 +126,40 @@ public class ParseDatabase {
 		
 		//increment number of chatrooms this user is hosting
 		//and add chatroom ID to User's chatroom list in Parse
-		ParseQuery<ParseUser> q = ParseUser.getQuery();
-		q.whereEqualTo("username", u.getUsername());
-		try {
-			List<ParseUser> users = q.find();
-			users.get(0).increment("numChatroomHosted");
-			users.get(0).add("chatrooms", cr.getID());
-			users.get(0).saveInBackground(new SaveCallback() {
-				public void done(ParseException e) {
-					if(e == null){
-				    	Log.i(TAG, "Successfully updated User in Parse.");
-					}
-					else
-						Log.e(TAG, e.toString());
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		currentUser.increment("numChatroomHosted");
+		currentUser.add("chatrooms", cr.getID());
+		currentUser.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if(e == null){
+			    	Log.i(TAG, "Successfully updated User in Parse.");
 				}
-			});
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+				else
+					Log.e(TAG, e.toString());
+			}
+		});
 	}
 	
 	public void deleteChatroom(Chatroom cr, User u){
 		boolean isHost = cr.isHost(u.getUsername());
 		//decrement number of chatrooms this user is hosting
 		//and delete chatroom ID from User's chatroom list in Parse
-		ParseQuery<ParseUser> q = ParseUser.getQuery();
-		q.whereEqualTo("username", u.getUsername());
-		try {
-			List<ParseUser> users = q.find();
-			
-			if(isHost)
-				users.get(0).increment("numChatroomHosted", -1);
-			//idList contains the id value that needs to be removed
-			ArrayList<String> idList = new ArrayList<String>();
-			idList.add(cr.getID());
-			users.get(0).removeAll("chatrooms", idList);
-			users.get(0).saveInBackground(new SaveCallback() {
-				public void done(ParseException e) {
-					if(e == null){
-				    	Log.i(TAG, "Successfully updated User in Parse.");
-					}
-					else
-						Log.e(TAG, e.toString());
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		if(isHost)
+			currentUser.increment("numChatroomHosted", -1);
+		//idList contains the id value that needs to be removed
+		ArrayList<String> idList = new ArrayList<String>();
+		idList.add(cr.getID());
+		currentUser.removeAll("chatrooms", idList);
+		currentUser.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if(e == null){
+			    	Log.i(TAG, "Successfully updated User in Parse.");
 				}
-			});
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+				else
+					Log.e(TAG, e.toString());
+			}
+		});
 		
 		//delete chatroom if User u is host
 		if(isHost){
@@ -257,5 +218,7 @@ public class ParseDatabase {
 		//TODO: If need to save user data before logout
 		ParseUser.logOut();
 	}
+	
+	
 }	
 
