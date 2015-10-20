@@ -99,8 +99,9 @@ public class ChatroomListActivity extends Activity {
 	        }
 	    });
 	    
-	    addDeleteChatroomButtonListener(testDelete);
-	    addShowChatroomIDButtonListener();
+	    deleteChatroomButtonListener(testDelete);
+	    showChatroomIDButtonListener();
+	    logoutButtonListener();
 	}
 //============================================================
 
@@ -171,7 +172,7 @@ printAllValues();
 	    });
 	}
 	
-	private void addShowChatroomIDButtonListener() {
+	private void showChatroomIDButtonListener() {
 	    Button bChatroom = (Button) findViewById(R.id.button4);
 	    bChatroom.setText("< ID");
 	    bChatroom.setOnClickListener(new View.OnClickListener() {
@@ -197,7 +198,7 @@ printAllValues();
 	}
 	
 	//long press to delete chatroom
-	private void addDeleteChatroomButtonListener(Button bChatroom) {
+	private void deleteChatroomButtonListener(Button bChatroom) {
 		bChatroom.setOnLongClickListener(new View.OnLongClickListener() {
 	        @Override
 	        public boolean onLongClick(View v) {
@@ -232,7 +233,7 @@ printAllValues();
 			        			   cr.setHost("");
 			        		   
 				        	   dialog.dismiss();
-	printAllValues();
+printAllValues();
 			        	   }
 
 				       })
@@ -249,7 +250,23 @@ printAllValues();
 	    });
 	}
 	
-//Left off at debug! why buttons showing weird stuff	
+	private void logoutButtonListener() {
+	    Button bLogout = (Button) findViewById(R.id.logout);
+	    bLogout.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
+				data.logout();
+				((FunTimezApp)getApplicationContext()).setUser(null);
+				if(((FunTimezApp)getApplicationContext()).getUser() != null)
+					Log.d(TAG, "Logging out... Username is now " + ((FunTimezApp)getApplicationContext()).getUser());
+				else
+					Log.d(TAG, "Logging out... Username is now null");
+				Intent intent = new Intent(getApplicationContext(), com.funtimez.LoginActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+			}
+	    });
+	}
 	
 	//TODO: ====code invite button next!===========
 	

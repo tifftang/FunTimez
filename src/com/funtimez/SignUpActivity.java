@@ -1,5 +1,7 @@
 package com.funtimez;
 
+import java.util.ArrayList;
+
 import com.funtimez.R;
 import com.funtimez.R.id;
 import com.funtimez.R.layout;
@@ -43,7 +45,7 @@ public class SignUpActivity extends Activity {
 				// Confirm Password
 				//String confirmPassword = ((EditText) findViewById(R.id.ConfirmPassword_Register)).getText().toString();
 				// Update
-				 registerUserOnParse();
+				registerUserOnParse();
 			}
 		});
 	}
@@ -65,10 +67,13 @@ public class SignUpActivity extends Activity {
 		return password.length() > 4;
 	}	
 	public void registerUserOnParse(){
+		ArrayList<String> chatrooms = new ArrayList<String>();
 		ParseUser user = new ParseUser();
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setEmail(email);
+		user.put("chatrooms", chatrooms);
+		user.put("numChatroomHosted", 0);
 		user.signUpInBackground(new SignUpCallback() {
 		  public void done(ParseException e) {
 		    if (e == null) {

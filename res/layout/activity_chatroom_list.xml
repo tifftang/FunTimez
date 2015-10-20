@@ -72,4 +72,13 @@
     
     </TableLayout>
 
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/tableLayout1"
+        android:layout_marginBottom="44dp"
+        android:text="Logout" />
+
 </RelativeLayout>

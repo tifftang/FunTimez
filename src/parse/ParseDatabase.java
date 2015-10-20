@@ -252,5 +252,10 @@ public class ParseDatabase {
 			}
 		}
 	}
+	
+	public void logout(){
+		//TODO: If need to save user data before logout
+		ParseUser.logOut();
+	}
 }	
 
