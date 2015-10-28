@@ -17,6 +17,16 @@
         android:layout_alignParentTop="true"
         android:text="@string/button_add_chatroom" />
     
+    <Button
+        android:id="@+id/invites"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/addChatroom"
+        android:layout_alignBottom="@+id/addChatroom"
+        android:layout_alignRight="@+id/tableLayout1"
+        android:text="Invites" />
+        
     <!--
     <ListView
         android:id="@android:id/list"

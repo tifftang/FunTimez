@@ -47,6 +47,7 @@ import com.funtimez.R.string;
 import com.parse.Parse;
 import com.parse.ParseUser;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.LogInCallback;
 
 /**
@@ -169,6 +170,11 @@ public class LoginActivity extends Activity  {
 	}
 	
 	private void updateUser(String username){
+		//set ParseInstallation's user to this logged in one
+		ParseInstallation currentInstallation = ParseInstallation.getCurrentInstallation();
+		currentInstallation.put("username", ParseUser.getCurrentUser().getUsername());
+		currentInstallation.saveInBackground();
+		
 		User u = new User(username);
 
 		//set the user of this app

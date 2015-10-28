@@ -214,6 +214,41 @@ public class ParseDatabase {
 		}
 	}
 	
+	public boolean friendRequest(User user, String recipient){
+		ParseObject request = new ParseObject("FriendRequest");
+		request.put("friendRequestFrom", user.getUsername());
+		request.put("friendRequestTo", recipient);
+		request.put("status", "pending");
+		request.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if(e == null){
+			    	Log.i(TAG, "Successfully sent friend request.");
+				}
+				else
+					Log.e(TAG, e.toString());
+			}
+		});
+		return false;
+	}
+	
+	public boolean chatroomInvite(User user, String recipient, String chatroomID){
+		ParseObject request = new ParseObject("ChatroomInvite");
+		request.put("from", user.getUsername());
+		request.put("to", recipient);
+		request.put("chatroomID", chatroomID);
+		request.put("status", "pending");
+		request.saveInBackground(new SaveCallback() {
+			public void done(ParseException e) {
+				if(e == null){
+			    	Log.i(TAG, "Successfully sent friend request.");
+				}
+				else
+					Log.e(TAG, e.toString());
+			}
+		});
+		return false;
+	}
+	
 	public void logout(){
 		//TODO: If need to save user data before logout
 		ParseUser.logOut();
@@ -223,5 +258,6 @@ public class ParseDatabase {
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		//TODO: incomplete method
 	}
+	
 }	
 

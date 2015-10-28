@@ -6,7 +6,10 @@ import com.funtimez.R;
 import com.funtimez.R.id;
 import com.funtimez.R.layout;
 import com.funtimez.R.menu;
+import com.parse.ParseCloud;
+import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -89,6 +92,7 @@ public class ChatroomListActivity extends Activity {
 	    });
 
 	    addNewChatroomButtonListener();
+	    addChatroomInvitesButtonListener();
 	    
 		Button testDelete = (Button) findViewById(R.id.button3);
 		testDelete.setText(chats.get(1).getName());
@@ -101,6 +105,7 @@ public class ChatroomListActivity extends Activity {
 	    
 	    deleteChatroomButtonListener(testDelete);
 	    showChatroomIDButtonListener();
+	    inviteToChatroomButtonListener();
 	    logoutButtonListener();
 	}
 //============================================================
@@ -165,6 +170,29 @@ printAllValues();
 							public void onClick(DialogInterface dialog, int which) {
 								dialog.dismiss();							
 							}
+				       });
+				builder.create();
+				builder.show();
+			}
+	    });
+	}
+	
+	private void addChatroomInvitesButtonListener() {
+	    Button bCInvites = (Button) findViewById(R.id.invites);
+	    bCInvites.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Chatroom cr = ((FunTimezApp)getApplicationContext()).getUser().getChatrooms().get(1);
+				
+				//Make a dialog pop up asking to confirm
+				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+				builder.setMessage(R.string.dialog_chatroom_invitations_msg)
+					   .setTitle(R.string.dialog_chatroom_invitations_title)
+//					   .setCancelable(false)
+				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   dialog.dismiss();
+				           }
 				       });
 				builder.create();
 				builder.show();
@@ -250,12 +278,56 @@ printAllValues();
 	    });
 	}
 	
+	private void inviteToChatroomButtonListener() {
+		Button invite = (Button) findViewById(R.id.button4);
+		invite.setOnLongClickListener(new View.OnLongClickListener() {
+	        @Override
+	        public boolean onLongClick(View v) {
+	        	final EditText input = new EditText(ChatroomListActivity.this);
+				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				input.setMaxLines(1);
+				
+				//Make a dialog pop up asking for user to invite
+				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+				builder.setMessage(R.string.dialog_to_invite_to_chatroom_msg)
+					   .setTitle(R.string.dialog_to_invite_to_chatroom_title)
+					   .setView(input)
+				       .setPositiveButton(R.string.button_done, new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   User user = ((FunTimezApp)getApplicationContext()).getUser();
+				        	   ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
+				        	   //TODO: dynamic rather than hardcode the chatroom ID
+				        	   Chatroom cr = ((FunTimezApp)getApplicationContext()).getUser().getChatrooms().get(1);
+				        	   
+				        	   data.chatroomInvite(user, input.getText().toString(), cr.getID());
+				        	   dialog.dismiss();
+			        	   }
+
+				       })
+				       .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();							
+							}
+				       });
+				builder.create();
+				builder.show();
+				return true;
+	        }
+	    });
+	}
+	
 	private void logoutButtonListener() {
 	    Button bLogout = (Button) findViewById(R.id.logout);
 	    bLogout.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				ParseInstallation currentInstallation = ParseInstallation.getCurrentInstallation();
+				currentInstallation.remove("username");
+				currentInstallation.saveInBackground();
+				
 				ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
 				data.logout();
+				
 				((FunTimezApp)getApplicationContext()).setUser(null);
 				if(((FunTimezApp)getApplicationContext()).getUser() != null)
 					Log.d(TAG, "Logging out... Username is now " + ((FunTimezApp)getApplicationContext()).getUser());

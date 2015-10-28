@@ -6,5 +6,11 @@
     <string name="dialog_chatroom_id_title">Chatroom ID</string>
     <string name="dialog_delete_chatroom_title">Delete Chatroom</string>
     <string name="dialog_delete_chatroom_msg">You are about to delete the chatroom. Are you sure you want to continue?</string>
+    <string name="dialog_invite_title">Invite User</string>
+    <string name="dialog_invite_msg">Please enter the username of the person you want to invite.</string>
+    <string name="dialog_chatroom_invitations_title">Chatroom Invitations</string>
+    <string name="dialog_chatroom_invitations_msg">You are invited to join the following chatrooms:</string>
+    <string name="dialog_to_invite_to_chatroom_title">Chatroom Invite</string>
+    <string name="dialog_to_invite_to_chatroom_msg">Please enter the username of the person you want to invite.</string>
     
 </resources>
