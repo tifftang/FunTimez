@@ -11,8 +11,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
+
 import android.util.Log;
 import core.Chatroom;
+import core.ChatroomInvite;
 import core.User;
 
 public class ParseDatabase {
@@ -249,12 +252,125 @@ public class ParseDatabase {
 		return false;
 	}
 	
+	public ArrayList<ChatroomInvite> getChatroomInvites(){
+		ArrayList<ChatroomInvite> invites = new ArrayList<ChatroomInvite>();
+		
+		ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("ChatroomInvite");
+		query.whereEqualTo("to", ParseUser.getCurrentUser().getUsername());
+		query.whereEqualTo("status", "pending");
+		
+		try {
+			ArrayList<ParseObject> invitesObject = (ArrayList<ParseObject>) query.find();
+			for(int index = 0; index < invitesObject.size(); index++){
+				ChatroomInvite temp = new ChatroomInvite();
+				temp.setSender((String) invitesObject.get(index).get("from"));
+				temp.setChatroomID((String) invitesObject.get(index).get("chatroomID"));
+				//TODO: rewrite the get chatroomID in cloud code later
+				ParseQuery<ParseObject> chatroomQuery = new ParseQuery<ParseObject>("Chatroom");
+				chatroomQuery.whereEqualTo("objectId", temp.getChatroomID());
+				temp.setChatroomName((String) chatroomQuery.find().get(0).get("name"));
+				invites.add(temp);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+
+		return invites;
+	}
+
+	//from = username of person who sent the invitation
+	//chatroomID = chatroom ID of chatroom that the current user is invited to
+	//returns null if failed, otherwise return a Chatroom object
+	public Chatroom joinChatroom(String from, String chatroomID, String chatroomName){
+		ParseUser currentUser = ParseUser.getCurrentUser();
+		ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("ChatroomInvite");
+		query.whereEqualTo("to", currentUser.getUsername());
+		query.whereEqualTo("from", from);
+		query.whereEqualTo("chatroomID", chatroomID);
+		
+		try {
+			ArrayList<ParseObject> invites = (ArrayList<ParseObject>) query.find();
+			ParseObject update = invites.get(0);
+			update.put("status", "accepted");
+			update.saveInBackground(new SaveCallback(){
+				public void done(ParseException e) {
+					if(e == null){
+						Log.i(TAG, "Successfully updated chatroom invite status.");
+					}
+					else{
+						Log.e(TAG, "Failed to update chatroom invite status. Error message: " + e);
+					}
+				}
+			});
+			
+			//query Parse for list of users in existing chatroom
+			query = new ParseQuery<ParseObject>("Chatroom");
+			query.whereEqualTo("objectId", chatroomID);
+			
+			ParseObject chatroomObj = ((ArrayList<ParseObject>) query.find()).get(0);
+			ArrayList<String> userList = (ArrayList<String>) (chatroomObj.get("userList"));
+			userList.add(currentUser.getUsername());
+			
+			//update chatroom in Parse
+			chatroomObj.put("userList", userList);
+			chatroomObj.saveInBackground();
+			
+			//create Chatroom obj
+			Chatroom cr = new Chatroom(chatroomID, chatroomName, userList, (String)chatroomObj.get("hostName"));
+			
+			//and add chatroom ID to User's chatroom list in Parse
+			currentUser.add("chatrooms", chatroomID);
+			currentUser.saveInBackground(new SaveCallback() {
+				public void done(ParseException e) {
+					if(e == null){
+				    	Log.i(TAG, "Successfully updated User in Parse.");
+					}
+					else
+						Log.e(TAG, e.toString());
+				}
+			});
+			
+			return cr;
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void declineChatroom(String from, String chatroomID){
+		ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("ChatroomInvite");
+		query.whereEqualTo("to", ParseUser.getCurrentUser().getUsername());
+		query.whereEqualTo("from", from);
+		query.whereEqualTo("chatroomID", chatroomID);
+		
+		try {
+			ArrayList<ParseObject> invites = (ArrayList<ParseObject>) query.find();
+			ParseObject update = invites.get(0);
+			update.put("status", "rejected");
+			update.saveInBackground(new SaveCallback(){
+				public void done(ParseException e) {
+					if(e == null){
+						Log.i(TAG, "Successfully updated chatroom invite status.");
+					}
+					else{
+						Log.e(TAG, "Failed to update chatroom invite status. Error message: " + e);
+					}
+				}
+			});
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
 	public void logout(){
 		//TODO: If need to save user data before logout
 		ParseUser.logOut();
 	}
 	
-	public void refresh(User u){
+	public void refresh(){
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		//TODO: incomplete method
 	}

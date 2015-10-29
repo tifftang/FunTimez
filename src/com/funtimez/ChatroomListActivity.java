@@ -20,9 +20,12 @@ import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +33,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import core.Chatroom;
-
+import core.ChatroomInvite;
 import core.User;
 import parse.ParseDatabase;
 
@@ -182,20 +185,49 @@ printAllValues();
 	    bCInvites.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Chatroom cr = ((FunTimezApp)getApplicationContext()).getUser().getChatrooms().get(1);
-				
-				//Make a dialog pop up asking to confirm
-				AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
-				builder.setMessage(R.string.dialog_chatroom_invitations_msg)
-					   .setTitle(R.string.dialog_chatroom_invitations_title)
-//					   .setCancelable(false)
-				       .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				        	   dialog.dismiss();
-				           }
-				       });
-				builder.create();
-				builder.show();
+				ParseDatabase data = ((FunTimezApp)getApplicationContext()).getParseData();
+				final ArrayList<ChatroomInvite> invites = data.getChatroomInvites();
+	        	String[] invitesContent = new String[invites.size() * 2];
+	        	for(int index = 0; index < invites.size() * 2; index += 2){
+	        		invitesContent[index] = "Join " + invites.get(index).getSender() +"'s " + invites.get(index).getChatroomName() + " chatroom.";
+	        		invitesContent[index + 1] = "Decline " + invites.get(index).getSender() +"'s " + invites.get(index).getChatroomName() + " chatroom.";
+	        	}
+
+		        AlertDialog.Builder builder = new AlertDialog.Builder(ChatroomListActivity.this);
+		        LayoutInflater inflater = getLayoutInflater();
+		        View view = (View) inflater.inflate(R.layout.chatroom_invite_list, null);
+		        builder.setView(view);
+		        builder.setTitle(R.string.dialog_chatroom_invitations_title);
+		        ListView lView = (ListView) view.findViewById(R.id.listViewChatroomInvites);
+		        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, invitesContent);
+		        lView.setAdapter(adapter);
+		        lView.setOnItemClickListener(new OnItemClickListener(){
+
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	Log.d("inside onItemClick of listview", "position: " + position + ", id: " + id);
+						ParseDatabase data = ((FunTimezApp) getApplicationContext()).getParseData();
+						int index = position / 2;
+						//join
+						if(position % 2 == 0){
+	Log.d("inside join if-statement", invites.size() + "");
+							//join Chatroom by contacting Parse and updating related fields on Parse
+							Chatroom cr = data.joinChatroom(invites.get(index).getSender(), invites.get(index).getChatroomID(), invites.get(index).getChatroomName());
+							if (cr != null)
+							{
+								User u = ((FunTimezApp)getApplicationContext()).getUser();
+								u.addChatroom(cr);
+							}
+						}
+						//decline
+						else{
+	Log.d("inside decline else statement", "" + invites.size());
+							data.declineChatroom(invites.get(index).getSender(), invites.get(index).getChatroomID());
+						}
+					}
+		        	
+		        });
+		        builder.show();
 			}
 	    });
 	}
