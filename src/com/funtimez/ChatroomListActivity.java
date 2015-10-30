@@ -38,9 +38,9 @@ import core.User;
 import parse.ParseDatabase;
 
 //===ArrayAdapter works, but cannot display the columns===============
-/*public class ChatroomListActivity extends ListActivity {
+public class ChatroomListActivity extends ListActivity {
 
-	ArrayAdapter<String> myAdapter;
+	CustomChatroomListAdapter myAdapter;
 
 	
 	@Override
@@ -49,16 +49,15 @@ import parse.ParseDatabase;
 		setContentView(R.layout.activity_chatroom_list);
 		
 		//getApplicationContext()
-		myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, createChatroomList());
-		ListView lView = (ListView) findViewById(android.R.id.list);
+		myAdapter = new CustomChatroomListAdapter(this, createChatroomList());
+		ListView lView = (ListView) findViewById(R.id.chatroomList);
 		lView.setAdapter(myAdapter);
-	}*/
+	}
 //=========================================================
-	
-//===To revert back to using SimpleCursorAdapter=================
-public class ChatroomListActivity extends Activity {
-	
-	SimpleCursorAdapter myAdapter;
+
+//public class ChatroomListActivity extends Activity {
+	/*		
+	//ParseQueryAdapter myAdapter;
 
 	public static final String TAG = "ChatroomListActivity";
 	
@@ -67,22 +66,15 @@ public class ChatroomListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chatroom_list);
 		
-//		SQLiteCursor cursor = createTestCursor();
+		//myAdapter = new ParseQueryAdapter<ParseObject>(this, );
 		
-
-/*		String[] from = createChatroomList();
-		int[] to = {android.R.id.text1};
-
-		//getApplicationContext()
-
-		//myAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);
-		//getListView().setAdapter(myAdapter);*/
-
-		//setListAdapter(myAdapter);
 		FunTimezApp app = ((FunTimezApp)getApplicationContext());
 		User user = app.getUser();
 		ArrayList<Chatroom> chats = user.getChatrooms();
 
+		//myAdapter.setTextKey(chats.get(0));
+		//setListAdapter(myAdapter);
+		
 		Log.i("FDSFSF", String.valueOf(chats.size()));
 		Button bSend = (Button) findViewById(R.id.button1);
 		bSend.setText(chats.get(0).getName());
@@ -109,6 +101,7 @@ public class ChatroomListActivity extends Activity {
 	    deleteChatroomButtonListener(testDelete);
 	    showChatroomIDButtonListener();
 	    inviteToChatroomButtonListener();
+	    showUserListButtonListener();
 	    logoutButtonListener();
 	}
 //============================================================
@@ -293,7 +286,6 @@ printAllValues();
 			        			   cr.setHost("");
 			        		   
 				        	   dialog.dismiss();
-printAllValues();
 			        	   }
 
 				       })
@@ -349,6 +341,10 @@ printAllValues();
 	    });
 	}
 	
+	private void showUserListButtonListener() {
+		ParseDatabase data
+	}
+	
 	private void logoutButtonListener() {
 	    Button bLogout = (Button) findViewById(R.id.logout);
 	    bLogout.setOnClickListener(new View.OnClickListener() {
@@ -371,7 +367,7 @@ printAllValues();
 			}
 	    });
 	}
-	
+	*/
 	//TODO: ====code invite button next!===========
 	
 //---testing purposes------------------------
@@ -411,13 +407,23 @@ printAllValues();
 	return ;
 }*/
 
-	/*
-private String[] createChatroomList()
-{
-	//chatroomList = {chatroom name, chatroom id, list of users using chatroom}
-	String [] chatroomList = {"Bunnies Rule", "00000001", "u", "does this work"};
-	return chatroomList;
-}*/
+
+	private ArrayList<String> createChatroomList()
+	{
+		ArrayList<String> chatroomList = new ArrayList<String>();
+		chatroomList.add("Bunnies Rule");
+		chatroomList.add("00000001");
+		chatroomList.add("does this work");
+
+		return chatroomList;
+	}
+	
+//private String[] createChatroomList()
+//{
+//	//chatroomList = {chatroom name, chatroom id, list of users using chatroom}
+//	String [] chatroomList = {"Bunnies Rule", "00000001", "u", "does this work"};
+//	return chatroomList;
+//}
 //-------------------------------------------
 	
 	/*protected void onListItemClick(ListView l, View v, int position, long id) {

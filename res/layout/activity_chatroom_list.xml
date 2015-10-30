@@ -7,7 +7,16 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.funtimez.ChatroomListActivity" >
+     
+    <ListView
+        android:id="@+id/chatroomList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" >
+    </ListView>
 
+        
+    <!-- 
     <Button
         android:id="@+id/addChatroom"
         style="?android:attr/buttonStyleSmall"
@@ -27,14 +36,14 @@
         android:layout_alignRight="@+id/tableLayout1"
         android:text="Invites" />
         
-    <!--
+    
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true" >
 
-    </ListView>	!-->
+    </ListView>	
 
     <TableLayout
         android:id="@+id/tableLayout1"
@@ -81,7 +90,7 @@
 
     
     </TableLayout>
-
+ -->
     <Button
         android:id="@+id/logout"
         android:layout_width="wrap_content"
@@ -90,5 +99,7 @@
         android:layout_alignRight="@+id/tableLayout1"
         android:layout_marginBottom="44dp"
         android:text="Logout" />
+
+
 
 </RelativeLayout>
